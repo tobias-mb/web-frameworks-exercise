@@ -1,6 +1,7 @@
 import React from 'react'
 import { Map, Marker, TileLayer, Tooltip } from "react-leaflet";
 
+//in the props.chargers need to have charger.coordinates = [Xpos, Ypos] 
 export default function MapComponent(props) {
     return (
         <Map center={[60.16952, 24.93545]} zoom={12}>

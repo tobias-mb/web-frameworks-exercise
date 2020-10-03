@@ -22,6 +22,7 @@ export default function ChargingComponent(props) {
         return () => clearInterval(interval);
     }, [timerOn, timerTime])
 
+    //calculate cost and kWh based on timer
     var currentCharge = Math.floor(timerTime*(props.power/36))/100;
     var currentCost = 0;
     if(props.type === "CCS") currentCost = Math.floor(timerTime*(props.power/36)*0.18)/100;

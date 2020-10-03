@@ -165,7 +165,7 @@
 		{
 			"id" : 1,
 			"name" : "Test User",
-			"password" : "1234"
+			"password" : "$2a$08$WylAfOPVKEUeo6daqSPZLuathgIixceaIfu1JhqcHnUHv7t7k5vLW"
 		}
 	]
 }

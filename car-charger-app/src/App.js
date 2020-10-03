@@ -13,16 +13,17 @@ class App extends React.Component {
   {
     super(props);
     this.state = {
-      user: undefined,
-      chargers: [],
-      searchString: "",
-      detailView: 0
+      user: undefined,  // logged in user
+      chargers: [],     // for chargers information
+      searchString: "", // for search field
+      detailView: 0     // id of charger open in detail. Or 0 for main view.
     }
   }
   setUser = (user) => {
     this.setState({ user : user });
   }
 
+  //get charger data on start
   componentDidMount(){
     axios.get('http://localhost:4000/chargers')
       .then(res => {
