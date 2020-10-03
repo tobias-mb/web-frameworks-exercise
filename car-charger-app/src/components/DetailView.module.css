@@ -1,6 +1,7 @@
 .background {
     background-color: seashell;
     padding: 10px;
+    width: 100%;
 }
 
 .returnButton {

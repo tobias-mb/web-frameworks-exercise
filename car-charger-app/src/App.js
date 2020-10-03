@@ -31,6 +31,7 @@ class App extends React.Component {
       .catch(err => console.log(err));
   }
 
+  //Monitor the Searchfield
   onSearchFieldChange = (event) => {
     this.setState({ searchString: event.target.value });
   }
@@ -43,7 +44,7 @@ class App extends React.Component {
     else return false;
   }
 
-  //used to get detail view for element with id displayId or return to the map
+  //used to get detail view for element with id displayId or return to the main view
   flipDetailView = (displayId) => {
     if (displayId !== undefined && this.state.detailView === 0){
       this.setState({ detailView : displayId })
@@ -51,10 +52,9 @@ class App extends React.Component {
       this.setState({ detailView : 0 })
     }
   }
-
   render() {
   let renderOutput = <div />
-    if (this.state.detailView === 0) {renderOutput =
+    if (this.state.detailView === 0) {renderOutput =  // Main View
       <div className={styles.App}>
         <div className={styles.flex}>
           <h1 className={styles.title}>CarChargerApp</h1>
@@ -68,9 +68,11 @@ class App extends React.Component {
                         flipDetailView = {this.flipDetailView} />
         </div>
       </div>
-    } else { renderOutput =
+    } else { renderOutput =   //Detail View
       <DetailView flipDetailView = {this.flipDetailView}
-                  { ...this.state.chargers.filter(charger => (charger.id === this.state.detailView) )[0] } />
+                  { ...this.state.chargers.filter(charger => (charger.id === this.state.detailView) )[0] }
+                  user = {this.state.user}
+                  setUser = {this.setUser}/>
     }
     return renderOutput;
   };

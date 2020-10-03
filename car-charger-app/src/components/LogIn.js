@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './LogIn.module.css';
 
+//log in functionality
 export default function LogIn(props) {
     if(props.user === undefined){
         return (
@@ -12,7 +13,7 @@ export default function LogIn(props) {
         return (
             <div className={styles.login}>
                 <div> {props.user} </div>
-                <div onClick={ () => props.setUser(undefined) }>
+                <div onClick={ () => props.setUser() }>
                     log out
                 </div>
             </div>
