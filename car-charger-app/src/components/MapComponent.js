@@ -1,5 +1,5 @@
 import React from 'react'
-import { Map, Marker, Popup, TileLayer, Tooltip } from "react-leaflet";
+import { Map, Marker, TileLayer, Tooltip } from "react-leaflet";
 
 export default function MapComponent(props) {
     return (
@@ -11,7 +11,7 @@ export default function MapComponent(props) {
           {props.chargers.map( charger => (
             <Marker key = {charger.id}
                     position = {charger.coordinates}
-                    onClick={ () => console.log(`you clicked charger:  ${charger.id} `) } >
+                    onClick={ () => props.flipDetailView(charger.id) } >
                         <Tooltip direction="top"
                                  offset={[-15, 0]}
                                  opacity={1}> {charger.name}

@@ -3,7 +3,7 @@ import styles from './ListElement.module.css'
 
 export default function ListElement(props) {
     return (
-        <li className = {styles.listElement} >
+        <li className = {styles.listElement} onClick={ () => props.flipDetailView(props.id) }>
             <div className = {styles.flex}>
                 <div className = {styles.name}> {props.name} </div>
                 <div className = {styles.type}> {props.type} </div>

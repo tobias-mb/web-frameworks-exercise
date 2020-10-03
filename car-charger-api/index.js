@@ -2,7 +2,6 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser');
 const port = 4000;
-const { v4: uuidv4 } = require('uuid');
 const cors = require('cors');
 const data = require('./data.json');
 
