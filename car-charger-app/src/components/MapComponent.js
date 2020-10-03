@@ -14,7 +14,7 @@ export default function MapComponent(props) {
                     onClick={ () => console.log(`you clicked charger:  ${charger.id} `) } >
                         <Tooltip direction="top"
                                  offset={[-15, 0]}
-                                 opacity={1} permanent> {charger.name}
+                                 opacity={1}> {charger.name}
                         </Tooltip>
             </Marker>
           ))}
