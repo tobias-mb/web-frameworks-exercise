@@ -2,31 +2,163 @@
     "chargers" : [
         {
             "id" : 1,
-            "name" : "charger 1",
-            "address" : "some street 1",
-            "type" : "type 1",
-            "coordinates": [60.171664, 24.944797]
+            "name" : "Parviainen",
+            "address" : "Porkkalankatu 11, Helsinki",
+            "type" : "Type 2",
+			"power" : 22,
+            "coordinates": [60.163615, 24.904306]
         },
         {
             "id" : 2,
-            "name" : "charger 2",
-            "address" : "some street 2",
-            "type" : "type 2",
-            "coordinates": [60.170477, 24.940269]
+            "name" : "Arkkitehtitoimisto",
+            "address" : "Tammasaarenlaituri 3, Helsinki",
+            "type" : "CCS",
+			"power" : 50,
+            "coordinates": [60.162264, 24.901515]
         },
         {
             "id" : 3,
-            "name" : "charger 3",
-            "address" : "some street 3",
-            "type" : "type 3",
-            "coordinates": [60.171370, 24.932637]
+            "name" : "NAPA",
+            "address" : "Tammasaarenkatu 3, Helsinki",
+            "type" : "CCS",
+			"power" : 100,
+            "coordinates": [60.161517, 24.904821]
         },
         {
             "id" : 4,
-            "name" : "charger 4",
-            "address" : "some street 4",
-            "type" : "type 4",
-            "coordinates": [60.169692, 24.937968]
+            "name" : "Virta Global",
+            "address" : "Tammasaarenkatu 7, Helsinki",
+            "type" : "CCS",
+			"power" : 150,
+            "coordinates": [60.161960, 24.906973]
+        },
+		{
+            "id" : 5,
+            "name" : "Helen Charging",
+            "address" : "Tammasaarenkatu 7, Helsinki",
+            "type" : "Type 2",
+			"power" : 22,
+            "coordinates": [60.161779, 24.906672]
+        },
+		{
+            "id" : 6,
+            "name" : "Bodysoul",
+            "address" : "Kellosaarenranta 1, Helsinki",
+            "type" : "CCS",
+			"power" : 50,
+            "coordinates": [60.161964, 24.912568]
+        },
+		{
+            "id" : 7,
+            "name" : "Parturi Ruoholahti",
+            "address" : "Itämerenkatu 16, Helsinki",
+            "type" : "CCS",
+			"power" : 100,
+            "coordinates": [60.163250, 24.913705]
+        },
+		{
+            "id" : 8,
+            "name" : "Hotelli Valo",
+            "address" : "Mannerheimintie 109, Helsinki",
+            "type" : "CCS",
+			"power" : 150,
+            "coordinates": [60.163498, 24.916870]
+        },
+		{
+            "id" : 9,
+            "name" : "Ruohoparkki",
+            "address" : "Porkkalankatu 10, Helsinki",
+            "type" : "Type 2",
+			"power" : 22,
+            "coordinates": [60.164208, 24.917287]
+        },
+		{
+            "id" : 10,
+            "name" : "Konstan Möljä",
+            "address" : "Hietalahdenkatu 14, Helsinki",
+            "type" : "CCS",
+			"power" : 50,
+            "coordinates": [60.164018, 24.926888]
+        },
+		{
+            "id" : 11,
+            "name" : "Teekkarien Autokoulu",
+            "address" : "Abrahaminkatu 13, Helsinki",
+            "type" : "CCS",
+			"power" : 100,
+            "coordinates": [60.164669, 24.928684]
+        },
+		{
+            "id" : 12,
+            "name" : "Haru",
+            "address" : "Fredrikinkatu 30, Helsinki",
+            "type" : "CCS",
+			"power" : 150,
+            "coordinates": [60.165255, 24.935694]
+        },
+		{
+            "id" : 13,
+            "name" : "Lönkka",
+            "address" : "Lönnrotinkatu 11, Helsinki",
+            "type" : "Type 2",
+			"power" : 22,
+            "coordinates": [60.165865, 24.936986]
+        },
+		{
+            "id" : 14,
+            "name" : "Pjazza",
+            "address" : "Yrjönkatu 18 B, Helsinki",
+            "type" : "CCS",
+			"power" : 50,
+            "coordinates": [60.165603, 24.942120]
+        },
+		{
+            "id" : 15,
+            "name" : "Rymy-Eetu",
+            "address" : "Erottajankatu 15, Helsinki",
+            "type" : "CCS",
+			"power" : 100,
+            "coordinates": [60.166093, 24.943931]
+        },
+		{
+            "id" : 16,
+            "name" : "Purpur",
+            "address" : "Rikhardinkatu 4, Helsinki",
+            "type" : "CCS",
+			"power" : 150,
+            "coordinates": [60.165962, 24.945952]
+        },
+		{
+            "id" : 17,
+            "name" : "La Torrefazione",
+            "address" : "Aleksanterinkatu 50, Helsinki",
+            "type" : "Type 2",
+			"power" : 22,
+            "coordinates": [60.168874, 24.943788]
+        },
+		{
+            "id" : 18,
+            "name" : "Ateneum",
+            "address" : "Kaivokatu 2, Helsinki",
+            "type" : "CCS",
+			"power" : 50,
+            "coordinates": [60.170330, 24.944098]
+        },
+		{
+            "id" : 19,
+            "name" : "Roasberg",
+            "address" : "Mikonkatu 13, Helsinki",
+            "type" : "CCS",
+			"power" : 100,
+            "coordinates": [60.170567, 24.945413]
+        },
+		{
+            "id" : 20,
+            "name" : "Kluuvi",
+            "address" : "Töölönlahdenkatu 3 A, Helsinki",
+            "type" : "CCS",
+			"power" : 150,
+            "coordinates": [60.173716, 24.940472]
         }
     ]        
 }
