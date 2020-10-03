@@ -1,0 +1,16 @@
+.App{
+  width: 100%;
+  background-color: seashell;
+  padding: 10px;
+  border: 1px grey solid;
+}
+
+.flex{
+  display: flex;
+}
+
+.title{
+  margin-right: auto;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}

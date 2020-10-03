@@ -1,0 +1,32 @@
+{
+    "chargers" : [
+        {
+            "id" : 1,
+            "name" : "charger 1",
+            "address" : "some street 1",
+            "type" : "type 1",
+            "coordinates": [60.171664, 24.944797]
+        },
+        {
+            "id" : 2,
+            "name" : "charger 2",
+            "address" : "some street 2",
+            "type" : "type 2",
+            "coordinates": [60.170477, 24.940269]
+        },
+        {
+            "id" : 3,
+            "name" : "charger 3",
+            "address" : "some street 3",
+            "type" : "type 3",
+            "coordinates": [60.171370, 24.932637]
+        },
+        {
+            "id" : 4,
+            "name" : "charger 4",
+            "address" : "some street 4",
+            "type" : "type 4",
+            "coordinates": [60.169692, 24.937968]
+        }
+    ]        
+}

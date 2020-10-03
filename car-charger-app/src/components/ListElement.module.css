@@ -1,0 +1,21 @@
+.listElement{
+  padding: 5px;
+  border: 1px grey solid;
+  max-width: 20%;
+  min-width: 200px;
+}
+
+.flex{
+    display: flex;
+}
+
+.name{
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.type{
+    font-style: italic;
+    margin-right: 10px;
+    margin-left: auto;
+}
