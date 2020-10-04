@@ -5,7 +5,7 @@
             "name" : "Parviainen",
             "address" : "Porkkalankatu 11",
             "type" : "Type 2 (free)",
-			"power" : 22,
+            "power" : 22,
             "coordinates": [60.163615, 24.904306]
         },
         {
@@ -13,7 +13,7 @@
             "name" : "Arkkitehtitoimisto",
             "address" : "Tammasaarenlaituri 3",
             "type" : "CCS",
-			"power" : 50,
+            "power" : 50,
             "coordinates": [60.162264, 24.901515]
         },
         {
@@ -21,7 +21,7 @@
             "name" : "NAPA",
             "address" : "Tammasaarenkatu 3",
             "type" : "CCS",
-			"power" : 100,
+            "power" : 100,
             "coordinates": [60.161517, 24.904821]
         },
         {
@@ -29,7 +29,7 @@
             "name" : "Virta Global",
             "address" : "Tammasaarenkatu 7",
             "type" : "CCS",
-			"power" : 150,
+            "power" : 150,
             "coordinates": [60.161960, 24.906973]
         },
 		{
@@ -37,7 +37,7 @@
             "name" : "Helen Charging",
             "address" : "Tammasaarenkatu 7",
             "type" : "Type 2",
-			"power" : 22,
+            "power" : 22,
             "coordinates": [60.161779, 24.906672]
         },
 		{
@@ -45,7 +45,7 @@
             "name" : "Bodysoul",
             "address" : "Kellosaarenranta 1",
             "type" : "CCS",
-			"power" : 50,
+            "power" : 50,
             "coordinates": [60.161964, 24.912568]
         },
 		{
@@ -53,7 +53,7 @@
             "name" : "Parturi Ruoholahti",
             "address" : "Itämerenkatu 16",
             "type" : "CCS",
-			"power" : 100,
+            "power" : 100,
             "coordinates": [60.163250, 24.913705]
         },
 		{
@@ -61,7 +61,7 @@
             "name" : "Hotelli Valo",
             "address" : "Mannerheimintie 109",
             "type" : "CCS",
-			"power" : 150,
+            "power" : 150,
             "coordinates": [60.163498, 24.916870]
         },
 		{
@@ -69,7 +69,7 @@
             "name" : "Ruohoparkki",
             "address" : "Porkkalankatu 10",
             "type" : "Type 2",
-			"power" : 22,
+            "power" : 22,
             "coordinates": [60.164208, 24.917287]
         },
 		{
@@ -77,7 +77,7 @@
             "name" : "Konstan Möljä",
             "address" : "Hietalahdenkatu 14",
             "type" : "CCS",
-			"power" : 50,
+            "power" : 50,
             "coordinates": [60.164018, 24.926888]
         },
 		{
@@ -85,7 +85,7 @@
             "name" : "Teekkarien Autokoulu",
             "address" : "Abrahaminkatu 13",
             "type" : "CCS",
-			"power" : 100,
+            "power" : 100,
             "coordinates": [60.164669, 24.928684]
         },
 		{
@@ -93,7 +93,7 @@
             "name" : "Haru",
             "address" : "Fredrikinkatu 30",
             "type" : "CCS",
-			"power" : 150,
+            "power" : 150,
             "coordinates": [60.165255, 24.935694]
         },
 		{
@@ -101,7 +101,7 @@
             "name" : "Lönkka",
             "address" : "Lönnrotinkatu 11",
             "type" : "Type 2",
-			"power" : 22,
+            "power" : 22,
             "coordinates": [60.165865, 24.936986]
         },
 		{
@@ -109,7 +109,7 @@
             "name" : "Pjazza",
             "address" : "Yrjönkatu 18 B",
             "type" : "CCS",
-			"power" : 50,
+            "power" : 50,
             "coordinates": [60.165603, 24.942120]
         },
 		{
@@ -117,7 +117,7 @@
             "name" : "Rymy-Eetu",
             "address" : "Erottajankatu 15",
             "type" : "CCS",
-			"power" : 100,
+            "power" : 100,
             "coordinates": [60.166093, 24.943931]
         },
 		{
@@ -125,7 +125,7 @@
             "name" : "Purpur",
             "address" : "Rikhardinkatu 4",
             "type" : "CCS",
-			"power" : 150,
+            "power" : 150,
             "coordinates": [60.165962, 24.945952]
         },
 		{
@@ -133,7 +133,7 @@
             "name" : "La Torrefazione",
             "address" : "Aleksanterinkatu 50",
             "type" : "Type 2 (free)",
-			"power" : 22,
+            "power" : 22,
             "coordinates": [60.168874, 24.943788]
         },
 		{
@@ -141,7 +141,7 @@
             "name" : "Ateneum",
             "address" : "Kaivokatu 2",
             "type" : "CCS",
-			"power" : 50,
+            "power" : 50,
             "coordinates": [60.170330, 24.944098]
         },
 		{
@@ -149,7 +149,7 @@
             "name" : "Roasberg",
             "address" : "Mikonkatu 13",
             "type" : "CCS",
-			"power" : 100,
+            "power" : 100,
             "coordinates": [60.170567, 24.945413]
         },
 		{
@@ -157,7 +157,7 @@
             "name" : "Kluuvi",
             "address" : "Töölönlahdenkatu 3 A",
             "type" : "CCS",
-			"power" : 150,
+            "power" : 150,
             "coordinates": [60.173716, 24.940472]
         }
     ],
@@ -167,5 +167,94 @@
 			"name" : "Test User",
 			"password" : "$2a$08$WylAfOPVKEUeo6daqSPZLuathgIixceaIfu1JhqcHnUHv7t7k5vLW"
 		}
-	]
+    ],
+    "activationCodes" : [
+        {
+            "chargerId" : 1,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 2,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 3,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 4,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 5,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 6,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 7,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 8,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 9,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 10,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 11,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 12,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 13,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 14,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 15,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 16,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 17,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 18,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 19,
+            "activationCode" : "A4CV"
+        },
+        {
+            "chargerId" : 20,
+            "activationCode" : "A4CV"
+        }
+    ],
+    "invoices" : [
+        {
+            "id" : 1,
+            "userId" : 1
+
+        }
+    ]
 }

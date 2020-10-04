@@ -12,6 +12,7 @@ export default function DetailView(props) {
                 <div> {props.type} </div>
                 <div> &nbsp; - {props.power}kW </div>
             </div>
+            <div> For testing purposes all activation codes are: A4CV </div>
             <button onClick={ props.flipDetailView } className = {styles.returnButton} > return to map </button>
             <LogIn user = {props.user} setUser = {props.setUser}/>
             <ChargingComponent {...props} />

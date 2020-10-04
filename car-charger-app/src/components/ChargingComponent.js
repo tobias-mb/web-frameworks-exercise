@@ -1,12 +1,40 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 
 export default function ChargingComponent(props) {
     
     const [timerOn, setTimerOn] = useState(false);
     const [timerTime, setTimerTime] = useState(0);
+    const [activationFieldString, setActivationFieldString] = useState("");
 
     const onStartButton = () => {
-        setTimerOn(!timerOn);
+        if(!timerOn){
+            axios({
+                method: 'post',
+                url: 'http://localhost:4000/chargerId',
+                auth: {
+                    username: props.user,
+                    password: props.password
+                },
+                data: {
+                    chargerId: props.id,
+                    activationCode: activationFieldString
+                }
+            })
+            .then(response => {
+                setTimerOn(true);
+                console.log('Start charging.'); 
+            })
+            .catch(error => {
+                console.log(error);
+                alert("Wrong activation code..");
+            });
+        }
+        else setTimerOn(false);
+    }
+
+    const onActivationFieldChange = (event) => {
+        setActivationFieldString(event.target.value);
     }
 
     //start a timer while charging
@@ -28,10 +56,13 @@ export default function ChargingComponent(props) {
     if(props.type === "CCS") currentCost = Math.floor(timerTime*(props.power/36)*0.18)/100;
     if(props.type === "Type 2") currentCost = Math.floor(timerTime*2/6)/100;
 
+
     if (props.user === "") return <div>Only registered users can start charging!</div>
     else return <>
         <div>
-            enter validation code: <input type = "text" style = {{width: '80px'}} />
+            enter activation code: <input type = "text" style = {{width: '80px'}}
+                                            onChange ={ onActivationFieldChange }
+                                            value={ activationFieldString}/>
             <button onClick={onStartButton} > {timerOn? "stop charging" : "start charging"}</button>
         </div>
         <div>

@@ -73,6 +73,7 @@ class App extends React.Component {
       <DetailView flipDetailView = {this.flipDetailView}
                   { ...this.state.chargers.filter(charger => (charger.id === this.state.detailView) )[0] }
                   user = {this.state.user}
+                  password = {this.state.password}
                   setUser = {this.setUser}/>
     }
     return renderOutput;

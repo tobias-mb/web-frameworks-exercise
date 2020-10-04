@@ -20,9 +20,12 @@ app.get('/chargers', (req, res) => {
   res.json(data.chargers)
 })
 
+//get all user. Only for testing
+/*
 app.get('/users', (req, res) => {
   res.json(data.users)
 })
+*/
 
 /*create new user
 {
@@ -61,6 +64,18 @@ app.post('/login', passport.authenticate('basic', {session : false}), (req, res)
   console.log("successful log in for user:")
   console.log(req.user);
   res.sendStatus(200);
+})
+
+/* check activation code before start charging. Needs chargerId and activationCode in req.body. responds with 200 OK or 403 forbidden
+  data: {
+      chargerId: 1,
+      activationCode: A4CV
+  }
+*/
+app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, res) => {
+  var findCharger = data.activationCodes.find(code => code.chargerId === req.body.chargerId);
+  if( findCharger.activationCode === req.body.activationCode) res.sendStatus(200);  //code is correct
+  else res.sendStatus(403);
 })
 
 app.listen(port, () => {
