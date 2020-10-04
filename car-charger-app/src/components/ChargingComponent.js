@@ -28,7 +28,7 @@ export default function ChargingComponent(props) {
     if(props.type === "CCS") currentCost = Math.floor(timerTime*(props.power/36)*0.18)/100;
     if(props.type === "Type 2") currentCost = Math.floor(timerTime*2/6)/100;
 
-    if (props.user === undefined) return <div>You must log in to start charging!</div>
+    if (props.user === "") return <div>Only registered users can start charging!</div>
     else return <>
         <div>
             enter validation code: <input type = "text" style = {{width: '80px'}} />

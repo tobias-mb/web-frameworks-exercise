@@ -1,8 +1,9 @@
 .listElement{
   padding: 5px;
   border: 1px grey solid;
-  max-width: 20%;
-  min-width: 200px;
+  width: 250px;
+  margin-left: -30px;
+  margin-right: 5px;
 }
 
 .flex{

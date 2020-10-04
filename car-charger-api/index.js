@@ -20,6 +20,10 @@ app.get('/chargers', (req, res) => {
   res.json(data.chargers)
 })
 
+app.get('/users', (req, res) => {
+  res.json(data.users)
+})
+
 /*create new user
 {
   "username": "Test User"
@@ -27,13 +31,17 @@ app.get('/chargers', (req, res) => {
 }
 */
 app.post('/users', (req, res) => {
-  const passwordHash = bcrypt.hashSync(req.body.password, 8);
-  data.users.push({
-    id: Date.now(),
-    name: req.body.username,
-    password: passwordHash
-  });
-  res.sendStatus(200);
+  const userResult = data.users.find(user => user.name === req.body.username);
+  if (userResult !== undefined)  res.sendStatus(403)  //user already exists
+  else{
+    const passwordHash = bcrypt.hashSync(req.body.password, 8);
+    data.users.push({
+      id: Date.now(),
+      name: req.body.username,
+      password: passwordHash
+    });
+    res.sendStatus(200);
+  }
 })
 
 //get Authorization
@@ -50,6 +58,7 @@ passport.use(new passportHttp.BasicStrategy(function(username, password, done) {
 
 // for log in: will try to authenticate with username and password
 app.post('/login', passport.authenticate('basic', {session : false}), (req, res) => {
+  console.log("successful log in for user:")
   console.log(req.user);
   res.sendStatus(200);
 })

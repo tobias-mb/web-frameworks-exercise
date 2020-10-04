@@ -6,10 +6,8 @@ import ChargingComponent from './ChargingComponent'
 export default function DetailView(props) {
     return (
         <div className = {styles.background} >
-            <div style = {{display: 'flex'}} >
-                <h1> { props.name } </h1>
-                <LogIn user = {props.user} setUser = {props.setUser}/>
-            </div>
+            <h1> { props.name } </h1>
+            <LogIn user = {props.user} setUser = {props.setUser}/>
             <div> {props.address} </div>
             <div style = {{display: 'flex'}} >
                 <div> {props.type} </div>

@@ -13,14 +13,16 @@ class App extends React.Component {
   {
     super(props);
     this.state = {
-      user: undefined,  // logged in user
+      user: "",  // logged in user
+      password: "",
       chargers: [],     // for chargers information
       searchString: "", // for search field
       detailView: 0     // id of charger open in detail. Or 0 for main view.
     }
   }
-  setUser = (user) => {
-    this.setState({ user : user });
+  setUser = (user, password) => {
+    this.setState({ user : user,
+                    password : password });
   }
 
   //get charger data on start
@@ -57,12 +59,10 @@ class App extends React.Component {
   let renderOutput = <div />
     if (this.state.detailView === 0) {renderOutput =  // Main View
       <div className={styles.App}>
-        <div className={styles.flex}>
-          <h1 className={styles.title}>CarChargerApp</h1>
-          <LogIn user = {this.state.user} setUser = {this.setUser} />
-        </div>
+        <h1 className={styles.title}>CarChargerApp</h1>
+        <LogIn user = {this.state.user} setUser = {this.setUser} />
         Search: <input type = "text" onChange ={ this.onSearchFieldChange } value={ this.state.searchString } />
-        <div className={styles.flex}>
+        <div style = {{display: 'flex'}}>
           <ChargerList chargers = {this.state.chargers.filter(charger => this.searchAllParts(charger) )} 
                        flipDetailView = {this.flipDetailView} />
           <MapComponent chargers = {this.state.chargers.filter(charger => this.searchAllParts(charger) )} 
