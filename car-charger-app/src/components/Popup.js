@@ -4,7 +4,7 @@ export default function Popup(props) {
     return (
         <div >
             <div style = {{display: 'flex'}} >
-                <button onClick={props.togglePopup}>close me</button>
+                <button onClick={props.togglePopup}> X </button>
                 <button onClick={() => props.authUser(props.usernameString, props.passwordString) }> Log In </button>
                 <button onClick={() => props.registerUser(props.usernameString, props.passwordString) }> Register </button>
             </div>

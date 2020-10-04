@@ -1,0 +1,5 @@
+.list{
+    overflow-y: scroll;
+    list-style-type: none;
+    height: 80vh;
+}
