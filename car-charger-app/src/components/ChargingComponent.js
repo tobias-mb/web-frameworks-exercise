@@ -7,10 +7,19 @@ export default function ChargingComponent(props) {
     const [timerTime, setTimerTime] = useState(0);
     const [activationFieldString, setActivationFieldString] = useState("");
 
-    /* Tell the server, that this charger is in use
+    const onActivationFieldChange = (event) => {
+        setActivationFieldString(event.target.value);
+    }
 
+    /*  Tell the server, that this charger is in use / no longer in use
+        When starting checks for correct activation code.
+        When stopping also sends data to create an invoice
     */
     const onStartButton = () => {
+        if (props.available <= 0){
+            alert("no charger available at this location!");
+            return;
+        }
         if(!timerOn){
             axios({
                 method: 'post',
@@ -35,7 +44,10 @@ export default function ChargingComponent(props) {
                 alert("Wrong activation code..");
             });
         }
-        else{ 
+        else{
+            let date = new Date(0);
+            date.setSeconds(timerTime);
+            let timeString = date.toISOString().substr(11, 8);
             axios({
                 method: 'post',
                 url: 'http://localhost:4000/chargerId',
@@ -46,12 +58,16 @@ export default function ChargingComponent(props) {
                 data: {
                     chargerId: props.id,
                     activationCode: activationFieldString,
-                    action : "stop"
+                    action : "stop",
+                    chargeTime : timeString,
+                    chargeEnergyKwh : currentCharge,
+                    chargeCostEuro : currentCost
                 }
             })
             .then(response => {
                 setTimerOn(false);
                 props.useCharger(props.id, 'stop');
+                setTimerTime(0);
                 console.log('Stop charging.'); 
             })
             .catch(error => {
@@ -59,10 +75,6 @@ export default function ChargingComponent(props) {
                 alert("something went wrong :(");
             });
         }
-    }
-
-    const onActivationFieldChange = (event) => {
-        setActivationFieldString(event.target.value);
     }
 
     //start a timer while charging
@@ -79,10 +91,10 @@ export default function ChargingComponent(props) {
     }, [timerOn, timerTime])
 
     //calculate cost and kWh based on timer
-    var currentCharge = Math.floor(timerTime*(props.power/36))/100;
-    var currentCost = 0;
-    if(props.type === "CCS") currentCost = Math.floor(timerTime*(props.power/36)*0.18)/100;
-    if(props.type === "Type 2") currentCost = Math.floor(timerTime*2/6)/100;
+    let currentCharge = Math.floor(timerTime*(props.powerKw/36))/100;
+    let currentCost = 0;
+    if(props.type === "CCS") currentCost = (Math.floor(timerTime*(props.powerKw/36)*0.18)/100);
+    if(props.type === "Type 2") currentCost = (Math.floor(timerTime*2/6)/100);
 
 
     if (props.user === "") return <div>Only registered users can start charging!</div>

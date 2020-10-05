@@ -12,7 +12,7 @@ export default function DetailView(props) {
             <div> {props.address} </div>
             <div style = {{display: 'flex'}} >
                 <div> {props.type} </div>
-                <div> &nbsp; - {props.power}kW </div>
+                <div> &nbsp; - {props.powerKw}kW </div>
             </div>
             <div> {props.available}/{props.maxAvailable} free </div>
             <div style = {{fontStyle: 'italic'}} > For testing purposes all activation codes are: A4CV </div>

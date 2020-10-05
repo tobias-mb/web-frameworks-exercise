@@ -7,7 +7,7 @@
             "type" : "Type 2 (free)",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 22,
+            "powerKw" : 22,
             "coordinates": [60.163615, 24.904306]
         },
         {
@@ -17,7 +17,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 50,
+            "powerKw" : 50,
             "coordinates": [60.162264, 24.901515]
         },
         {
@@ -27,7 +27,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 100,
+            "powerKw" : 100,
             "coordinates": [60.161517, 24.904821]
         },
         {
@@ -37,7 +37,7 @@
             "type" : "CCS",
             "available" : 4,
             "maxAvailable" : 4,
-            "power" : 150,
+            "powerKw" : 150,
             "coordinates": [60.161960, 24.906973]
         },
 		{
@@ -47,7 +47,7 @@
             "type" : "Type 2",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 22,
+            "powerKw" : 22,
             "coordinates": [60.161779, 24.906672]
         },
 		{
@@ -57,7 +57,7 @@
             "type" : "CCS",
             "available" : 4,
             "maxAvailable" : 4,
-            "power" : 50,
+            "powerKw" : 50,
             "coordinates": [60.161964, 24.912568]
         },
 		{
@@ -67,7 +67,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 100,
+            "powerKw" : 100,
             "coordinates": [60.163250, 24.913705]
         },
 		{
@@ -77,7 +77,7 @@
             "type" : "CCS",
             "available" : 4,
             "maxAvailable" : 4,
-            "power" : 150,
+            "powerKw" : 150,
             "coordinates": [60.163498, 24.916870]
         },
 		{
@@ -87,7 +87,7 @@
             "type" : "Type 2",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 22,
+            "powerKw" : 22,
             "coordinates": [60.164208, 24.917287]
         },
 		{
@@ -97,7 +97,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 50,
+            "powerKw" : 50,
             "coordinates": [60.164018, 24.926888]
         },
 		{
@@ -107,7 +107,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 100,
+            "powerKw" : 100,
             "coordinates": [60.164669, 24.928684]
         },
 		{
@@ -117,7 +117,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 150,
+            "powerKw" : 150,
             "coordinates": [60.165255, 24.935694]
         },
 		{
@@ -127,7 +127,7 @@
             "type" : "Type 2",
             "available" : 4,
             "maxAvailable" : 4,
-            "power" : 22,
+            "powerKw" : 22,
             "coordinates": [60.165865, 24.936986]
         },
 		{
@@ -137,7 +137,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 50,
+            "powerKw" : 50,
             "coordinates": [60.165603, 24.942120]
         },
 		{
@@ -147,7 +147,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 100,
+            "powerKw" : 100,
             "coordinates": [60.166093, 24.943931]
         },
 		{
@@ -157,7 +157,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 150,
+            "powerKw" : 150,
             "coordinates": [60.165962, 24.945952]
         },
 		{
@@ -167,7 +167,7 @@
             "type" : "Type 2 (free)",
             "available" : 4,
             "maxAvailable" : 4,
-            "power" : 22,
+            "powerKw" : 22,
             "coordinates": [60.168874, 24.943788]
         },
 		{
@@ -177,7 +177,7 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 50,
+            "powerKw" : 50,
             "coordinates": [60.170330, 24.944098]
         },
 		{
@@ -187,7 +187,7 @@
             "type" : "CCS",
             "available" : 4,
             "maxAvailable" : 4,
-            "power" : 100,
+            "powerKw" : 100,
             "coordinates": [60.170567, 24.945413]
         },
 		{
@@ -197,16 +197,9 @@
             "type" : "CCS",
             "available" : 2,
             "maxAvailable" : 2,
-            "power" : 150,
+            "powerKw" : 150,
             "coordinates": [60.173716, 24.940472]
         }
-    ],
-	"users"	: [
-		{
-			"id" : 1,
-			"name" : "Test User",
-			"password" : "$2a$08$WylAfOPVKEUeo6daqSPZLuathgIixceaIfu1JhqcHnUHv7t7k5vLW"
-		}
     ],
     "activationCodes" : [
         {
@@ -289,12 +282,24 @@
             "chargerId" : 20,
             "activationCode" : "A4CV"
         }
+    ],    
+	"users"	: [
+		{
+			"id" : 1,
+			"name" : "Test User",
+            "password" : "$2a$08$WylAfOPVKEUeo6daqSPZLuathgIixceaIfu1JhqcHnUHv7t7k5vLW",
+            "invoices" : [1]
+		}
     ],
     "invoices" : [
         {
             "id" : 1,
-            "userId" : 1
-
+            "userId" : 1,
+            "chargerId" : 1,
+            "date" : "5.10.2020, 21:46:46",
+            "chargeTime" : "00:32:14",
+            "chargeEnergyKwh" : 20,
+            "chargeCostEuro" : 4
         }
     ]
 }

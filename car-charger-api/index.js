@@ -66,22 +66,40 @@ app.post('/login', passport.authenticate('basic', {session : false}), (req, res)
   res.sendStatus(200);
 })
 
-/* check activation code before start charging. Needs chargerId and activationCode in req.body. responds with 200 OK or 403 forbidden
+/* check activation code before start charging. Needs chargerId and activationCode in req.body.
+  action is for either start or stop charging  => update available chargers
+  chargeTime, chargeEnergyKwh, chargeCostEuro is used on stop request to create invoice
+  responds with 200 OK or 403 forbidden
   data: {
       chargerId: 1,
       activationCode: A4CV
       action : 'start' / 'stop'
+      chargeTime : timerTime,
+      chargeEnergyKwh : currentCharge,
+      chargeCostEuro : currentCost
   }
 */
 app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, res) => {
   var findActivationCode = data.activationCodes.find(code => code.chargerId === req.body.chargerId);
-  if (findActivationCode === undefined) { // couldn't find charger with matching ID (shouldn't happen)
+  var findCharger = data.chargers.find(charger => charger.id === req.body.chargerId);
+  if (findActivationCode === undefined || findCharger === undefined) { // couldn't find charger or activation code with matching ID (shouldn't happen)
     res.sendStatus(500); 
     return;
   }
-  var findCharger = data.chargers.find(charger => charger.id === req.body.chargerId);
-  if (req.body.action === 'stop'){  // stop charging
+  if (req.body.action === 'stop'){  // stop charging and create invoice for that charge
     findCharger.available +=1;
+
+    let rightnow = new Date;
+    data.invoices.push({
+      id : rightnow.getTime(),
+      userId : req.user.id,
+      chargerId : req.body.chargerId,
+      date : rightnow.toLocaleString(),
+      chargeTime : req.body.chargeTime,
+      chargeEnergyKwh : req.body.chargeEnergyKwh,
+      chargeCostEuro : req.body.chargeCostEuro
+    });
+
     res.sendStatus(200);
     return;
   }
@@ -91,6 +109,11 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
     return;
   }
   res.sendStatus(403);
+})
+
+//get all invoices. Only for testing
+app.get('/invoices', (req, res) => {
+  res.json(data.invoices)
 })
 
 app.listen(port, () => {
