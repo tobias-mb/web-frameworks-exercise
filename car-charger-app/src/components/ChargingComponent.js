@@ -4,6 +4,7 @@ import axios from 'axios';
 export default function ChargingComponent(props) {
     
     const [timerTime, setTimerTime] = useState(0);
+    const [timerStart, setTimerStart] = useState(0);
     const [activationFieldString, setActivationFieldString] = useState("");
 
     const onActivationFieldChange = (event) => {
@@ -20,7 +21,9 @@ export default function ChargingComponent(props) {
             return;
         }
         if(!props.timerOn){
-            axios({
+            setTimerStart(Date.now());  //initialise timer
+            setTimerTime(0);
+            axios({ //tell server to start charging
                 method: 'post',
                 url: 'http://localhost:4000/chargerId',
                 auth: {
@@ -34,7 +37,7 @@ export default function ChargingComponent(props) {
                 }
             })
             .then(response => {
-                props.toggleTimer();
+                props.toggleTimer();    //start timer
                 props.useCharger(props.id, 'start');
                 console.log('Start charging.'); 
             })
@@ -44,10 +47,11 @@ export default function ChargingComponent(props) {
             });
         }
         else{
-            let date = new Date(0);
+            let date = new Date(0); // convert the charge time into readable format
             date.setSeconds(timerTime);
             let timeString = date.toISOString().substr(11, 8);
-            axios({
+
+            axios({ //tell server to stop charging
                 method: 'post',
                 url: 'http://localhost:4000/chargerId',
                 auth: {
@@ -64,9 +68,10 @@ export default function ChargingComponent(props) {
                 }
             })
             .then(response => {
-                props.toggleTimer();
+                props.toggleTimer();    // stop timer
                 props.useCharger(props.id, 'stop');
                 setTimerTime(0);
+                setTimerStart(0);
                 console.log('Stop charging.'); 
             })
             .catch(error => {
@@ -81,13 +86,13 @@ export default function ChargingComponent(props) {
         let interval = null;        
         if(props.timerOn){
             interval = setInterval(() =>{
-                setTimerTime( timerTime => timerTime +1 );
+                setTimerTime( Math.floor((Date.now()-timerStart)/1000) );
             }, 1000)
         }else if (!props.timerOn && timerTime !== 0){
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-    }, [props.timerOn, timerTime])
+    }, [props.timerOn, timerTime, timerStart])
 
     //calculate cost and kWh based on timer
     let currentCharge = Math.floor(timerTime*(props.powerKw/36))/100;
