@@ -1,5 +1,6 @@
 import React from 'react';
 
+//Username and Password field of the Log In
 export default function Popup(props) {
     return (
         <div >

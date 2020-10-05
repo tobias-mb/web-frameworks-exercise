@@ -70,12 +70,27 @@ app.post('/login', passport.authenticate('basic', {session : false}), (req, res)
   data: {
       chargerId: 1,
       activationCode: A4CV
+      action : 'start' / 'stop'
   }
 */
 app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, res) => {
-  var findCharger = data.activationCodes.find(code => code.chargerId === req.body.chargerId);
-  if( findCharger.activationCode === req.body.activationCode) res.sendStatus(200);  //code is correct
-  else res.sendStatus(403);
+  var findActivationCode = data.activationCodes.find(code => code.chargerId === req.body.chargerId);
+  if (findActivationCode === undefined) { // couldn't find charger with matching ID (shouldn't happen)
+    res.sendStatus(500); 
+    return;
+  }
+  var findCharger = data.chargers.find(charger => charger.id === req.body.chargerId);
+  if (req.body.action === 'stop'){  // stop charging
+    findCharger.available +=1;
+    res.sendStatus(200);
+    return;
+  }
+  if( req.body.action === 'start' && findActivationCode.activationCode === req.body.activationCode){  // start charging & code is correct 
+    findCharger.available -= 1;
+    res.sendStatus(200);
+    return;
+  }
+  res.sendStatus(403);
 })
 
 app.listen(port, () => {

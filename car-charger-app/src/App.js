@@ -25,6 +25,20 @@ class App extends React.Component {
                     password : password });
   }
 
+  //Update internal state of APP when charger is in use. action = 'start'  / 'stop'
+  useCharger = (ID, action) => {
+    let findChargerIndex = this.state.chargers.findIndex(charger => charger.id === ID);
+    if(findChargerIndex !== -1){
+
+      let chargersCopy = [...this.state.chargers];
+      let findChargerCopy = {...chargersCopy[findChargerIndex]};
+      (action === 'start')? findChargerCopy.available -= 1 : findChargerCopy.available += 1;
+      chargersCopy[findChargerIndex] = findChargerCopy;
+
+      this.setState({ chargers : chargersCopy });
+    }
+  }
+
   //get charger data on start
   componentDidMount(){
     axios.get('http://localhost:4000/chargers')
@@ -47,7 +61,7 @@ class App extends React.Component {
     else return false;
   }
 
-  //used to get detail view for element with id displayId or return to the main view
+  //used to get detail view for element with id displayId or return to the main view for id = 0
   flipDetailView = (displayId) => {
     if (displayId !== undefined && this.state.detailView === 0){
       this.setState({ detailView : displayId })
@@ -74,7 +88,8 @@ class App extends React.Component {
                   { ...this.state.chargers.filter(charger => (charger.id === this.state.detailView) )[0] }
                   user = {this.state.user}
                   password = {this.state.password}
-                  setUser = {this.setUser}/>
+                  setUser = {this.setUser}
+                  useCharger = {this.useCharger} />
     }
     return renderOutput;
   };

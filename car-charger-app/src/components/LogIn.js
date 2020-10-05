@@ -5,10 +5,12 @@ import Popup from './Popup';
 //log in functionality
 export default function LogIn(props) {
 
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);  // open / close username + password fields
     const togglePopup = () => {
-        setShowPopup(!showPopup);
+        setShowPopup(showPopup => !showPopup);
     }
+
+    //username + password fields
     const [usernameString, setUsernameString] = useState("");
     const [passwordString, setPasswordString] = useState("");
 
@@ -42,6 +44,7 @@ export default function LogIn(props) {
         });
     }
     
+    // register new user and log in with that user
     const registerUser = (name, password) => {
         axios({
             method: 'post',

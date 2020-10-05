@@ -9,6 +9,7 @@ export default function ListElement(props) {
             <div style = {{display: 'flex'}} >
                 <div className = {styles.type}> {props.type} </div>
                 <div> - {props.power}kW </div>
+                <div> &nbsp; &nbsp; {props.available}/{props.maxAvailable} free </div>
             </div>
         </li>
     )

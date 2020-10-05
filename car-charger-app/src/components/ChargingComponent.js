@@ -7,6 +7,9 @@ export default function ChargingComponent(props) {
     const [timerTime, setTimerTime] = useState(0);
     const [activationFieldString, setActivationFieldString] = useState("");
 
+    /* Tell the server, that this charger is in use
+
+    */
     const onStartButton = () => {
         if(!timerOn){
             axios({
@@ -18,11 +21,13 @@ export default function ChargingComponent(props) {
                 },
                 data: {
                     chargerId: props.id,
-                    activationCode: activationFieldString
+                    activationCode: activationFieldString,
+                    action : "start"
                 }
             })
             .then(response => {
                 setTimerOn(true);
+                props.useCharger(props.id, 'start');
                 console.log('Start charging.'); 
             })
             .catch(error => {
@@ -30,7 +35,30 @@ export default function ChargingComponent(props) {
                 alert("Wrong activation code..");
             });
         }
-        else setTimerOn(false);
+        else{ 
+            axios({
+                method: 'post',
+                url: 'http://localhost:4000/chargerId',
+                auth: {
+                    username: props.user,
+                    password: props.password
+                },
+                data: {
+                    chargerId: props.id,
+                    activationCode: activationFieldString,
+                    action : "stop"
+                }
+            })
+            .then(response => {
+                setTimerOn(false);
+                props.useCharger(props.id, 'stop');
+                console.log('Stop charging.'); 
+            })
+            .catch(error => {
+                console.log(error);
+                alert("something went wrong :(");
+            });
+        }
     }
 
     const onActivationFieldChange = (event) => {
