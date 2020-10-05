@@ -17,10 +17,20 @@ class App extends React.Component {
       password: "",
       chargers: [],     // for chargers information
       searchString: "", // for search field
-      detailView: 0     // id of charger open in detail. Or 0 for main view.
+      detailView: 0,    // id of charger open in detail. Or 0 for main view.
+      timerOn: false
     }
   }
+
+  toggleTimer = () => {
+    if(this.state.timerOn) this.setState({ timerOn: false });
+    else this.setState({ timerOn: true });
+  }
   setUser = (user, password) => {
+    if(this.state.timerOn){
+      alert("can't log out while timer is running");
+      return;
+    }
     this.setState({ user : user,
                     password : password });
   }
@@ -63,6 +73,10 @@ class App extends React.Component {
 
   //used to get detail view for element with id displayId or return to the main view for id = 0
   flipDetailView = (displayId) => {
+    if(this.state.timerOn){
+      alert("can't close charging while timer is running");
+      return;
+    }
     if (displayId !== undefined && this.state.detailView === 0){
       this.setState({ detailView : displayId })
     }else{
@@ -89,7 +103,9 @@ class App extends React.Component {
                   user = {this.state.user}
                   password = {this.state.password}
                   setUser = {this.setUser}
-                  useCharger = {this.useCharger} />
+                  useCharger = {this.useCharger} 
+                  timerOn = {this.state.timerOn}
+                  toggleTimer = {this.toggleTimer} />
     }
     return renderOutput;
   };

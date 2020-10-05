@@ -3,7 +3,6 @@ import axios from 'axios';
 
 export default function ChargingComponent(props) {
     
-    const [timerOn, setTimerOn] = useState(false);
     const [timerTime, setTimerTime] = useState(0);
     const [activationFieldString, setActivationFieldString] = useState("");
 
@@ -20,7 +19,7 @@ export default function ChargingComponent(props) {
             alert("no charger available at this location!");
             return;
         }
-        if(!timerOn){
+        if(!props.timerOn){
             axios({
                 method: 'post',
                 url: 'http://localhost:4000/chargerId',
@@ -35,7 +34,7 @@ export default function ChargingComponent(props) {
                 }
             })
             .then(response => {
-                setTimerOn(true);
+                props.toggleTimer();
                 props.useCharger(props.id, 'start');
                 console.log('Start charging.'); 
             })
@@ -65,7 +64,7 @@ export default function ChargingComponent(props) {
                 }
             })
             .then(response => {
-                setTimerOn(false);
+                props.toggleTimer();
                 props.useCharger(props.id, 'stop');
                 setTimerTime(0);
                 console.log('Stop charging.'); 
@@ -80,15 +79,15 @@ export default function ChargingComponent(props) {
     //start a timer while charging
     useEffect(() => {
         let interval = null;        
-        if(timerOn){
+        if(props.timerOn){
             interval = setInterval(() =>{
                 setTimerTime( timerTime => timerTime +1 );
             }, 1000)
-        }else if (!timerOn && timerTime !== 0){
+        }else if (!props.timerOn && timerTime !== 0){
             clearInterval(interval);
         }
         return () => clearInterval(interval);
-    }, [timerOn, timerTime])
+    }, [props.timerOn, timerTime])
 
     //calculate cost and kWh based on timer
     let currentCharge = Math.floor(timerTime*(props.powerKw/36))/100;
@@ -103,7 +102,7 @@ export default function ChargingComponent(props) {
             enter activation code: <input type = "text" style = {{width: '80px'}}
                                             onChange ={ onActivationFieldChange }
                                             value={ activationFieldString}/>
-            <button onClick={onStartButton} > {timerOn? "stop charging" : "start charging"}</button>
+            <button onClick={onStartButton} > {props.timerOn? "stop charging" : "start charging"}</button>
         </div>
         <div>
             ongoing charge: <input type = "text" style = {{width: '80px'}} readOnly value={ currentCharge } /> kWh
