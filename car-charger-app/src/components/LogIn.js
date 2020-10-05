@@ -10,17 +10,6 @@ export default function LogIn(props) {
         setShowPopup(showPopup => !showPopup);
     }
 
-    //username + password fields
-    const [usernameString, setUsernameString] = useState("");
-    const [passwordString, setPasswordString] = useState("");
-
-    const onUsernameFieldChange = (event) => {
-        setUsernameString( event.target.value );
-    }
-    const onPasswordFieldChange = (event) => {
-        setPasswordString( event.target.value );
-    }
-
     /* try to authenticate with name + password
     if name is a valid user, log in */
     // authUser("Test User", 1234)
@@ -77,10 +66,10 @@ export default function LogIn(props) {
                     </button>
                 </div> :
                  <Popup togglePopup = {togglePopup}
-                        onUsernameFieldChange = {onUsernameFieldChange}
-                        onPasswordFieldChange = {onPasswordFieldChange} 
-                        usernameString = {usernameString}
-                        passwordString = {passwordString}
+                        onUsernameFieldChange = {props.onUsernameFieldChange}
+                        onPasswordFieldChange = {props.onPasswordFieldChange} 
+                        usernameString = {props.usernameString}
+                        passwordString = {props.passwordString}
                         authUser = {authUser}
                         registerUser = {registerUser}   /> }
         </div>

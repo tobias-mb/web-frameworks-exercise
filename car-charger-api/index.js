@@ -35,7 +35,7 @@ app.get('/users', (req, res) => {
 */
 app.post('/users', (req, res) => {
   const userResult = data.users.find(user => user.name === req.body.username);
-  if (userResult !== undefined)  res.sendStatus(403)  //user already exists
+  if (userResult !== undefined || req.body.username === "" )  res.sendStatus(403)  //user already exists
   else{
     const passwordHash = bcrypt.hashSync(req.body.password, 8);
     data.users.push({
