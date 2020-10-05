@@ -18,9 +18,7 @@ class App extends React.Component {
       chargers: [],     // for chargers information
       searchString: "", // for search field
       detailView: 0,    // id of charger open in detail. Or 0 for main view.
-      timerOn: false,
-      usernameString: "",
-      passwordString: ""
+      timerOn: false
     }
   }
 
@@ -64,12 +62,6 @@ class App extends React.Component {
   onSearchFieldChange = (event) => {
     this.setState({ searchString: event.target.value });
   }
-  onUsernameFieldChange = (event) => {
-    this.setState({ usernameString: event.target.value });
-  }
-  onPasswordFieldChange = (event) => {
-    this.setState({ passwordString: event.target.value });
-  }
 
   //checks if the search string is part of name, address or type
   searchAllParts = (charger) => {
@@ -92,18 +84,13 @@ class App extends React.Component {
     }
   }
 
-
+  
   render() {
   let renderOutput = <div />
     if (this.state.detailView === 0) {renderOutput =  // Main View
       <div className={styles.App}>
         <h1 className={styles.title}>CarChargerApp</h1>
-        <LogIn  user = {this.state.user}
-                setUser = {this.setUser} 
-                usernameString = {this.state.usernameString}
-                passwordString = {this.state.passwordString} 
-                onUsernameFieldChange = {this.onUsernameFieldChange}
-                onPasswordFieldChange = {this.onPasswordFieldChange} />
+        <LogIn user = {this.state.user} setUser = {this.setUser} />
         Search: <input type = "text" onChange ={ this.onSearchFieldChange } value={ this.state.searchString } />
         <div style = {{display: 'flex'}}>
           <ChargerList chargers = {this.state.chargers.filter(charger => this.searchAllParts(charger) )} 
@@ -120,11 +107,7 @@ class App extends React.Component {
                   setUser = {this.setUser}
                   useCharger = {this.useCharger} 
                   timerOn = {this.state.timerOn}
-                  toggleTimer = {this.toggleTimer}
-                  usernameString = {this.state.usernameString}
-                  passwordString = {this.state.passwordString} 
-                  onUsernameFieldChange = {this.onUsernameFieldChange}
-                  onPasswordFieldChange = {this.onPasswordFieldChange} />
+                  toggleTimer = {this.toggleTimer} />
     }
     return renderOutput;
   };

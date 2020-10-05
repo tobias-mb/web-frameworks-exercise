@@ -6,8 +6,17 @@ import Popup from './Popup';
 export default function LogIn(props) {
 
     const [showPopup, setShowPopup] = useState(false);  // open / close username + password fields
+    const [usernameString, setUsernameString] = useState("");
+    const [passwordString, setPasswordString] = useState("");
+    
     const togglePopup = () => {
         setShowPopup(showPopup => !showPopup);
+    }
+    const onUsernameFieldChange = (event) => {
+        setUsernameString(event.target.value);
+    }
+    const onPasswordFieldChange = (event) => {
+        setPasswordString(event.target.value);
     }
 
     /* try to authenticate with name + password
@@ -25,6 +34,8 @@ export default function LogIn(props) {
         .then(response => {
             console.log('Log in successful.');
             props.setUser(name, password);
+            setUsernameString("");
+            setPasswordString("");
             togglePopup();
         })
         .catch(error => { 
@@ -46,6 +57,8 @@ export default function LogIn(props) {
         .then(response => {
             console.log('successfully registered');
             props.setUser(name, password);
+            setUsernameString("");
+            setPasswordString("");
             togglePopup();
         })
         .catch(error => { 
@@ -66,10 +79,10 @@ export default function LogIn(props) {
                     </button>
                 </div> :
                  <Popup togglePopup = {togglePopup}
-                        onUsernameFieldChange = {props.onUsernameFieldChange}
-                        onPasswordFieldChange = {props.onPasswordFieldChange} 
-                        usernameString = {props.usernameString}
-                        passwordString = {props.passwordString}
+                        onUsernameFieldChange = {onUsernameFieldChange}
+                        onPasswordFieldChange = {onPasswordFieldChange} 
+                        usernameString = {usernameString}
+                        passwordString = {passwordString}
                         authUser = {authUser}
                         registerUser = {registerUser}   /> }
         </div>
