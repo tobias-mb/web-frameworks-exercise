@@ -6,6 +6,7 @@ import LogIn from './components/LogIn';
 import ChargerList from './components/ChargerList';
 import MapComponent from './components/MapComponent';
 import DetailView from './components/DetailView';
+import InvoicesList from './components/InvoicesList';
 
 
 class App extends React.Component {
@@ -18,6 +19,7 @@ class App extends React.Component {
       chargers: [],     // for chargers information
       searchString: "", // for search field
       detailView: 0,    // id of charger open in detail. Or 0 for main view.
+      showInvoices: false,
       timerOn: false
     }
   }
@@ -25,6 +27,10 @@ class App extends React.Component {
   toggleTimer = () => {
     if(this.state.timerOn) this.setState({ timerOn: false });
     else this.setState({ timerOn: true });
+  }
+  toggleInvoices = () => {
+    if(this.state.showInvoices) this.setState({ showInvoices: false });
+    else this.setState({ showInvoices: true });
   }
   setUser = (user, password) => {
     if(this.state.timerOn){
@@ -73,24 +79,33 @@ class App extends React.Component {
 
   //used to get detail view for element with id displayId or return to the main view for id = 0
   flipDetailView = (displayId) => {
+    
     if(this.state.timerOn){
       alert("can't close charging while timer is running");
       return;
     }
-    if (displayId !== undefined && this.state.detailView === 0){
-      this.setState({ detailView : displayId })
-    }else{
-      this.setState({ detailView : 0 })
-    }
+
+    if(this.state.showInvoices) this.toggleInvoices();  // so it can be called from invoices
+          
+    this.setState({ detailView : displayId })
+
   }
 
   
   render() {
-  let renderOutput = <div />
-    if (this.state.detailView === 0) {renderOutput =  // Main View
+    let renderOutput = <div />
+    if(this.state.showInvoices){ renderOutput = // invoices for logged in user
+      <div className={styles.App} >
+        <button style={{marginLeft: "20px", marginTop: "10px"}} onClick={ this.toggleInvoices } > return to app </button>
+        <InvoicesList user = { this.state.user} password = {this.state.password}
+                      chargers = {this.state.chargers}
+                      flipDetailView = {this.flipDetailView} />
+      </div>
+    }
+    else if (this.state.detailView === 0) {renderOutput =  // Main View
       <div className={styles.App}>
         <h1 className={styles.title}>CarChargerApp</h1>
-        <LogIn user = {this.state.user} setUser = {this.setUser} />
+        <LogIn user = {this.state.user} setUser = {this.setUser} toggleInvoices = {this.toggleInvoices} />
         Search: <input type = "text" onChange ={ this.onSearchFieldChange } value={ this.state.searchString } />
         <div style = {{display: 'flex'}}>
           <ChargerList chargers = {this.state.chargers.filter(charger => this.searchAllParts(charger) )} 
@@ -104,6 +119,7 @@ class App extends React.Component {
                   { ...this.state.chargers.filter(charger => (charger.id === this.state.detailView) )[0] }
                   user = {this.state.user}
                   password = {this.state.password}
+                  toggleInvoices = {this.toggleInvoices}
                   setUser = {this.setUser}
                   useCharger = {this.useCharger} 
                   timerOn = {this.state.timerOn}

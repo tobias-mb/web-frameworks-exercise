@@ -76,7 +76,8 @@ export default function LogIn(props) {
                     <div> {props.user} &nbsp; </div>
                     <button onClick={ () => props.setUser("","") }>
                             log out
-                    </button>
+                    </button> &nbsp;
+                    <button onClick={ props.toggleInvoices } > prev. charges </button>
                 </div> :
                  <Popup togglePopup = {togglePopup}
                         onUsernameFieldChange = {onUsernameFieldChange}

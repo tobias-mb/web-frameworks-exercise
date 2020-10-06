@@ -1,0 +1,5 @@
+.list{
+    overflow-y: scroll;
+    width: fit-content;
+    height: 90vh;
+}

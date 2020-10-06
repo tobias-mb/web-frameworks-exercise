@@ -288,7 +288,8 @@
 			"id" : 1,
 			"name" : "Test User",
             "password" : "$2a$08$WylAfOPVKEUeo6daqSPZLuathgIixceaIfu1JhqcHnUHv7t7k5vLW",
-            "invoices" : [1]
+            "invoices" : [1],
+            "ongoingCharge": {}
 		}
     ],
     "invoices" : [

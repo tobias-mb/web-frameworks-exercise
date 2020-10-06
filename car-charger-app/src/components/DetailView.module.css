@@ -1,7 +1,8 @@
 .background {
     background-color: seashell;
     padding: 10px;
-    width: 100%;
+    width: 98vw;
+    height: 97vh
 }
 
 .returnButton {

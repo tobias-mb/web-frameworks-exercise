@@ -103,6 +103,7 @@ export default function ChargingComponent(props) {
 
     if (props.user === "") return <div>Only registered users can start charging!</div>
     else return <>
+        <div style = {{fontStyle: 'italic'}} > For testing purposes all activation codes are: A4CV </div>
         <div>
             enter activation code: <input type = "text" style = {{width: '80px'}}
                                             onChange ={ onActivationFieldChange }

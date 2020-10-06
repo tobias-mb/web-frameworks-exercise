@@ -20,13 +20,6 @@ app.get('/chargers', (req, res) => {
   res.json(data.chargers)
 })
 
-//get all user. Only for testing
-/*
-app.get('/users', (req, res) => {
-  res.json(data.users)
-})
-*/
-
 /*create new user
 {
   "username": "Test User"
@@ -41,7 +34,9 @@ app.post('/users', (req, res) => {
     data.users.push({
       id: Date.now(),
       name: req.body.username,
-      password: passwordHash
+      password: passwordHash,
+      invoices: [],
+      ongoingCharge: {}
     });
     res.sendStatus(200);
   }
@@ -89,7 +84,8 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
   if (req.body.action === 'stop'){  // stop charging and create invoice for that charge
     findCharger.available +=1;
 
-    let rightnow = new Date;
+    let rightnow = new Date();
+    
     data.invoices.push({
       id : rightnow.getTime(),
       userId : req.user.id,
@@ -99,6 +95,8 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
       chargeEnergyKwh : req.body.chargeEnergyKwh,
       chargeCostEuro : req.body.chargeCostEuro
     });
+
+    req.user.invoices.push(rightnow.getTime());
 
     res.sendStatus(200);
     return;
@@ -111,10 +109,14 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
   res.sendStatus(403);
 })
 
-//get all invoices. Only for testing
-app.get('/invoices', (req, res) => {
-  res.json(data.invoices)
+//get invoices of the user, who makes the request
+app.get('/invoices', passport.authenticate('basic', {session : false}), (req, res) => {
+  res.json(data.invoices.filter(invoice => invoice.userId === req.user.id ));
 })
+
+/*app.get('/users', (req, res) => {
+  res.json(data.users)
+})*/
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)

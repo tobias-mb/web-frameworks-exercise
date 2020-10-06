@@ -15,9 +15,8 @@ export default function DetailView(props) {
                 <div> &nbsp; - {props.powerKw}kW </div>
             </div>
             <div> {props.available}/{props.maxAvailable} free </div>
-            <div style = {{fontStyle: 'italic'}} > For testing purposes all activation codes are: A4CV </div>
-            <button onClick={ props.flipDetailView } className = {styles.returnButton} > return to map </button>
-            <LogIn  user = {props.user} setUser = {props.setUser} />
+            <button onClick={ () => props.flipDetailView(0) } className = {styles.returnButton} > return to map </button>
+            <LogIn  user = {props.user} setUser = {props.setUser} toggleInvoices = {props.toggleInvoices} />
             <ChargingComponent {...props} />
         </div>
     )
