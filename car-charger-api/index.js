@@ -83,7 +83,7 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
     return;
   }
   if (req.body.action === 'stop'){  // stop charging and create invoice for that charge
-    findCharger.available +=1;
+    findCharger.connections[0].available +=1;
 
     let rightnow = new Date();
     
@@ -105,7 +105,7 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
   }
   if( req.body.action === 'start' && findActivationCode.activationCode === req.body.activationCode){  // start charging & code is correct 
     req.user.ongoingCharge = {chargerId: req.body.chargerId, startTime: Date.now()}; // save ongoing charge
-    findCharger.available -= 1;
+    findCharger.connections[0].available -= 1;
     res.sendStatus(200);
     return;
   }

@@ -40,13 +40,28 @@ class App extends React.Component {
     this.setState({ ongoingCharge: boo });
   }
 
+  //custom mothod to deep clone a single charger
+  cloneCharger = (charger) => {
+    let clonedConnections = [];
+    for(let i = 0; i < charger.connections.length; i++){
+      clonedConnections.push( {...charger.connections[i]} );
+    }
+    return {
+      id: charger.id,
+      name: charger.name,
+      address: charger.address,
+      connections: clonedConnections,
+      coordinates: [...charger.coordinates]
+    }
+  }
+
   //Update internal state of APP when charger is in use. action = 'start'  / 'stop'
   useCharger = (ID, action) => {
     let findChargerIndex = this.state.chargers.findIndex(charger => charger.id === ID);
     if(findChargerIndex !== -1){
 
       let chargersCopy = [...this.state.chargers];
-      let findChargerCopy = {...chargersCopy[findChargerIndex]};
+      let findChargerCopy = this.cloneCharger(chargersCopy[findChargerIndex]);
       (action === 'start')? findChargerCopy.connections[0].available -= 1 : findChargerCopy.connections[0].available += 1;
       chargersCopy[findChargerIndex] = findChargerCopy;
 

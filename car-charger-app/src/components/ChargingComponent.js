@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import StartButton from './StartButton'
 
 export default function ChargingComponent(props) {
     
@@ -27,7 +26,7 @@ export default function ChargingComponent(props) {
         When stopping also sends data to create an invoice
     */
     const onStartButton = () => {
-        if (props.available <= 0){
+        if (props.connections[0].available <= 0){
             alert("no charger available at this location!");
             return;
         }
@@ -109,26 +108,28 @@ export default function ChargingComponent(props) {
     }, [timerOn, timerTime, timerStart])
 
     //calculate cost and kWh based on timer
-    let currentCharge = Math.floor(timerTime*(props.powerKw/36))/100;
+    let currentCharge = Math.floor(timerTime*(props.connections[0].powerKw/36))/100;
     let currentCost = 0;
-    if(props.type === "CCS") currentCost = (Math.floor(timerTime*(props.powerKw/36)*0.18)/100);
-    if(props.type === "Type 2") currentCost = (Math.floor(timerTime*2/6)/100);
+    if(props.connections[0].type === "CCS") currentCost = (Math.floor(timerTime*(props.connections[0].powerKw/36)*0.18)/100);
+    if(props.connections[0].type === "Type 2") currentCost = (Math.floor(timerTime*2/6)/100);
 
 
     if (props.user === "") return <div>Only registered users can start charging!</div>
-    else return <>
+    else if(Object.keys(props.ongoingCharge).length > 0 && props.ongoingCharge.chargerId !== props.id){  //There's an ongoing charge at different charger
+        return <div onClick = {() => props.flipDetailView(props.id)} > 
+                A different charger is in use.
+            </div>
+    }else{ return <>
         <div style = {{fontStyle: 'italic'}} > For testing purposes all activation codes are: A4CV </div>
         <div>
             enter activation code: <input type = "text" style = {{width: '80px'}}
                                             onChange ={ onActivationFieldChange }
                                             value={ activationFieldString}/>
-            <StartButton onStartButton= {onStartButton}  
-                         chargerId = {props.id}
-                         ongoingCharge = {props.ongoingCharge} />
+            <button onClick={onStartButton} >{ (Object.keys(props.ongoingCharge).length === 0)? "start charging" : "stop charging" }</button>
         </div>
         <div>
             ongoing charge: <input type = "text" style = {{width: '80px'}} readOnly value={ currentCharge } /> kWh
             &nbsp; cost: <input type = "text" style = {{width: '80px'}} readOnly value={ currentCost } /> €
         </div>
-    </>
+    </>}
 }
