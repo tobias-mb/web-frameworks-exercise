@@ -55,10 +55,11 @@ passport.use(new passportHttp.BasicStrategy(function(username, password, done) {
 }));
 
 // for log in: will try to authenticate with username and password
+// send back info about ongoing charge that user
 app.post('/login', passport.authenticate('basic', {session : false}), (req, res) => {
   console.log("successful log in for user:")
   console.log(req.user);
-  res.sendStatus(200);
+  res.json( req.user.ongoingCharge );
 })
 
 /* check activation code before start charging. Needs chargerId and activationCode in req.body.
@@ -98,10 +99,12 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
 
     req.user.invoices.push(rightnow.getTime());
 
+    req.user.ongoingCharge = {}; //clear ongoign charge
     res.sendStatus(200);
     return;
   }
   if( req.body.action === 'start' && findActivationCode.activationCode === req.body.activationCode){  // start charging & code is correct 
+    req.user.ongoingCharge = {chargerId: req.body.chargerId, startTime: Date.now()}; // save ongoing charge
     findCharger.available -= 1;
     res.sendStatus(200);
     return;

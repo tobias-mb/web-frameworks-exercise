@@ -13,17 +13,14 @@ export default function ChargingComponent(props) {
         setActivationFieldString(event.target.value);
     }
 
-    const toggleTimer = () => {
-        setTimerOn(timerOn => !timerOn);
-    }
-
+    // directly start timer, if there's charge in progress
     useEffect( () => {
-        if( Object.keys(props.ongoingCharge).length > 0 && props.ongoingCharge.chargerId === props.id ){ //get charge in progress
-            toggleTimer();
+        if( Object.keys(props.ongoingCharge).length > 0 && props.ongoingCharge.chargerId === props.id ){ 
+            setTimerOn(true);
             setTimerStart(props.ongoingCharge.startTime);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[props.ongoingCharge])
 
     /*  Tell the server, that this charger is in use / no longer in use
         When starting checks for correct activation code.
@@ -39,7 +36,7 @@ export default function ChargingComponent(props) {
             setTimerStart(Date.now());
             props.setOngoingCharge( props.id, Date.now() );
             setTimerTime(0);
-            axios({ //tell server to start charging decrease available chargers
+            axios({ //tell server to start charging, decrease available chargers
                 method: 'post',
                 url: 'http://localhost:4000/chargerId',
                 auth: {
@@ -53,7 +50,7 @@ export default function ChargingComponent(props) {
                 }
             })
             .then(response => {
-                toggleTimer();    //start timer
+                setTimerOn(true);    //start timer
                 props.useCharger(props.id, 'start'); //decrease available chargers
                 console.log('Start charging.'); 
             })
@@ -77,7 +74,6 @@ export default function ChargingComponent(props) {
                 },
                 data: {
                     chargerId: props.id,
-                    activationCode: activationFieldString,
                     action : "stop",
                     chargeTime : timeString,
                     chargeEnergyKwh : currentCharge,
@@ -85,7 +81,7 @@ export default function ChargingComponent(props) {
                 }
             })
             .then(response => {
-                toggleTimer();    // stop timer
+                setTimerOn(false);    // stop timer
                 props.setOngoingCharge();   //no more charge in progress
                 props.useCharger(props.id, 'stop'); // increase available chargers
                 setTimerTime(0);

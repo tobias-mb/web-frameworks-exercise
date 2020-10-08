@@ -16,7 +16,9 @@ export default function DetailView(props) {
             </div>
             <div> {props.available}/{props.maxAvailable} free </div>
             <button onClick={ () => props.flipDetailView(0) } className = {styles.returnButton} > return to map </button>
-            <LogIn  user = {props.user} setUser = {props.setUser} toggleInvoices = {props.toggleInvoices} />
+            <LogIn  user = {props.user} setUser = {props.setUser}
+                    toggleInvoices = {props.toggleInvoices}
+                    setOngoingCharge = {props.setOngoingCharge} />
             <ChargingComponent {...props} />
         </div>
     )
