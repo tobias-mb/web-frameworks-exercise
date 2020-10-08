@@ -22,11 +22,11 @@ app.get('/chargers', (req, res) => {
 
 //put charger data into database. needs correct password in req.data
 app.post('/chargers', (req, res) => {
-  if(!bcrypt.compareSync(req.body.password, "$2a$08$R8cyJ/6HdVPGSuC7p/CmguQgEEzDD3lbb/qZc6HdJhu35QjavKko2")){
-    data.chargers = req.body.chargers;
-    data.activationCodes = req.body.activationCodes;
+  if(!bcrypt.compareSync(req.body.password, "$2a$08$R8cyJ/6HdVPGSuC7p/CmguQgEEzDD3lbb/qZc6HdJhu35QjavKko2")){ //wrong pw
     res.sendStatus(403)
   }else{
+    data.chargers = req.body.chargers;
+    data.activationCodes = req.body.activationCodes;
     res.sendStatus(200);
   }
 })
