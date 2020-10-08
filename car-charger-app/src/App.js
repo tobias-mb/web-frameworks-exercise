@@ -98,9 +98,10 @@ class App extends React.Component {
     }
     else if (this.state.detailView === 0) {renderOutput =  // Main View
       <div className={styles.App}>
-        <button onClick={ () => console.log(this.state.ongoingCharge) }> click me </button>
         <h1 className={styles.title}>CarChargerApp</h1>
-        <LogIn user = {this.state.user} setUser = {this.setUser} toggleInvoices = {this.toggleInvoices} />
+        <LogIn  user = {this.state.user} setUser = {this.setUser} 
+                toggleInvoices = {this.toggleInvoices}
+                setOngoingCharge = {this.setOngoingCharge} />
         Search: <input type = "text" onChange ={ this.onSearchFieldChange } value={ this.state.searchString } />
         <div style = {{display: 'flex'}}>
           <ChargerList chargers = {this.state.chargers.filter(charger => this.searchAllParts(charger) )} 
