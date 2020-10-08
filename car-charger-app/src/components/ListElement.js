@@ -7,9 +7,9 @@ export default function ListElement(props) {
             <div className = {styles.name}> {props.name} </div>
             <div> {props.address} </div>
             <div style = {{display: 'flex'}} >
-                <div className = {styles.type}> {props.type} </div>
-                <div> - {props.powerKw}kW </div>
-                <div> &nbsp; &nbsp; {props.available}/{props.maxAvailable} free </div>
+                <div className = {styles.type}> {props.connections[0].type} </div>
+                <div> - {props.connections[0].powerKw}kW </div>
+                <div> &nbsp; &nbsp; {props.connections[0].available}/{props.connections[0].maxAvailable} free </div>
             </div>
         </li>
     )

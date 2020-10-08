@@ -47,7 +47,7 @@ class App extends React.Component {
 
       let chargersCopy = [...this.state.chargers];
       let findChargerCopy = {...chargersCopy[findChargerIndex]};
-      (action === 'start')? findChargerCopy.available -= 1 : findChargerCopy.available += 1;
+      (action === 'start')? findChargerCopy.connections[0].available -= 1 : findChargerCopy.connections[0].available += 1;
       chargersCopy[findChargerIndex] = findChargerCopy;
 
       this.setState({ chargers : chargersCopy });
@@ -72,7 +72,7 @@ class App extends React.Component {
   searchAllParts = (charger) => {
     if(    charger.name.includes(this.state.searchString)
         || charger.address.includes(this.state.searchString) 
-        || charger.type.includes(this.state.searchString) ) return true;
+        || charger.connections[0].type.includes(this.state.searchString) ) return true;
     else return false;
   }
 
