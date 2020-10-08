@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import styles from './ChargingComponent.module.css'
 
 export default function ChargingComponent(props) {
     
@@ -19,8 +20,7 @@ export default function ChargingComponent(props) {
             setTimerOn(true);
             setTimerStart(props.ongoingCharge.startTime);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[props.ongoingCharge])
+    },[props.ongoingCharge, props.id])
 
     /*  Tell the server, that this charger is in use / no longer in use
         When starting checks for correct activation code.
@@ -119,8 +119,8 @@ export default function ChargingComponent(props) {
 
 if (props.user === "") return <div>Only registered users can start charging!</div>
     else if(Object.keys(props.ongoingCharge).length > 0 && props.ongoingCharge.chargerId !== props.id){  //There's an ongoing charge at different charger
-        return <div onClick = {() => props.flipDetailView(props.id)} > 
-                A different charger is in use.
+        return <div style={{display: 'flex'}}> 
+                You are already using a <div className={styles.redirect} onClick = {() => props.flipDetailView(props.ongoingCharge.chargerId)}> &nbsp; different charger. </div>
             </div>
     }else{ return <>
         <div style = {{fontStyle: 'italic'}} > For testing purposes all activation codes are: A4CV </div>
