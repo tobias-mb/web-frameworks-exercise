@@ -62,39 +62,52 @@ app.post('/login', passport.authenticate('basic', {session : false}), (req, res)
   res.json( req.user.ongoingCharge );
 })
 
-/* check activation code before start charging. Needs chargerId and activationCode in req.body.
-  action is for either start or stop charging  => update available chargers
-  chargeTime, chargeEnergyKwh, chargeCostEuro is used on stop request to create invoice
-  responds with 200 OK or 403 forbidden
+/*
   data: {
-      chargerId: 1,
-      activationCode: A4CV
-      action : 'start' / 'stop'
-      chargeTime : timerTime,
-      chargeEnergyKwh : currentCharge,
-      chargeCostEuro : currentCost
+      chargerId: 1,               -> this charger should be changed
+      connectionId: 1,            -> this connection should be changed
+      activationCode: A4CV        -> need the correct activation code to start
+      action : 'start' / 'stop'   -> App tells the server to start / stop charging.
   }
 */
 app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, res) => {
+  
   var findActivationCode = data.activationCodes.find(code => code.chargerId === req.body.chargerId);
   var findCharger = data.chargers.find(charger => charger.id === req.body.chargerId);
   if (findActivationCode === undefined || findCharger === undefined) { // couldn't find charger or activation code with matching ID (shouldn't happen)
     res.sendStatus(500); 
     return;
   }
-  if (req.body.action === 'stop'){  // stop charging and create invoice for that charge
-    findCharger.connections[0].available +=1;
 
+  var findConnectionIndex = findCharger.connections.findIndex(connection => connection.id === req.body.connectionId);
+  if(findConnectionIndex === -1){ // The specified connection doesn't exist at this charger (shouldn't happen)
+    res.sendStatus(500); 
+    return;
+  }
+
+  if (req.body.action === 'stop'){  // stop charging and create invoice for that charge
+    findCharger.connections[findConnectionIndex].available +=1;
+
+    //some math to calculate charge time & cost
     let rightnow = new Date();
+    chargeTime = Math.floor((rightnow.getTime() - req.user.ongoingCharge.startTime)/1000);
+    chargeEnergyKwh = Math.floor(chargeTime*(findCharger.connections[findConnectionIndex].powerKw/36))/100;
+    let chargeCostEuro = 0;
+    if(findCharger.connections[findConnectionIndex].type === "CCS") chargeCostEuro = (Math.floor(chargeTime*(findCharger.connections[findConnectionIndex].powerKw/36)*0.18)/100);
+    if(findCharger.connections[findConnectionIndex].type === "Type 2") chargeCostEuro = (Math.floor(chargeTime*2/6)/100);
+    //make chargeTime more readable
+    let gru = new Date(0);
+    gru.setSeconds(chargeTime);
+    let readgru = gru.toISOString().substr(11, 8);
     
     data.invoices.push({
       id : rightnow.getTime(),
       userId : req.user.id,
       chargerId : req.body.chargerId,
       date : rightnow.toLocaleString(),
-      chargeTime : req.body.chargeTime,
-      chargeEnergyKwh : req.body.chargeEnergyKwh,
-      chargeCostEuro : req.body.chargeCostEuro
+      chargeTime : readgru,
+      chargeEnergyKwh : chargeEnergyKwh,
+      chargeCostEuro : chargeCostEuro
     });
 
     req.user.invoices.push(rightnow.getTime());
@@ -105,11 +118,11 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
   }
   if( req.body.action === 'start' && findActivationCode.activationCode === req.body.activationCode){  // start charging & code is correct 
     req.user.ongoingCharge = {chargerId: req.body.chargerId, startTime: Date.now()}; // save ongoing charge
-    findCharger.connections[0].available -= 1;
+    findCharger.connections[findConnectionIndex].available -= 1;
     res.sendStatus(200);
     return;
   }
-  res.sendStatus(403);
+  res.sendStatus(403);  // refuse when activation code is wrong
 })
 
 //get invoices of the user, who makes the request

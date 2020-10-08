@@ -28,10 +28,12 @@ class App extends React.Component {
     if(this.state.showInvoices) this.setState({ showInvoices: false });
     else this.setState({ showInvoices: true });
   }
+  //for convience also does password
   setUser = (user, password) => {
     this.setState({ user : user,
                     password : password });
   }
+  //remember ongoing charge
   setOngoingCharge = (charger,time) => {
     let boo = {};
     if(charger !== undefined && time !== undefined){ //called with arguments
@@ -55,14 +57,17 @@ class App extends React.Component {
     }
   }
 
-  //Update internal state of APP when charger is in use. action = 'start'  / 'stop'
-  useCharger = (ID, action) => {
+  //Update internal state of APP when a charger is in use (change available connections). action = 'start'  / 'stop'
+  useCharger = (ID, connectionId, action) => {
     let findChargerIndex = this.state.chargers.findIndex(charger => charger.id === ID);
     if(findChargerIndex !== -1){
 
       let chargersCopy = [...this.state.chargers];
       let findChargerCopy = this.cloneCharger(chargersCopy[findChargerIndex]);
-      (action === 'start')? findChargerCopy.connections[0].available -= 1 : findChargerCopy.connections[0].available += 1;
+      let findConnectionIndex = findChargerCopy.connections.findIndex(connection => connection.id === connectionId);
+      if(findConnectionIndex === -1) return;
+      (action === 'start')? findChargerCopy.connections[findConnectionIndex].available -= 1
+                          : findChargerCopy.connections[findConnectionIndex].available += 1;
       chargersCopy[findChargerIndex] = findChargerCopy;
 
       this.setState({ chargers : chargersCopy });

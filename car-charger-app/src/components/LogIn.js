@@ -71,22 +71,25 @@ export default function LogIn(props) {
     return(
         <div>
             {(!showPopup)?
-                (props.user === "")? <button onClick={ togglePopup }>
-                    log in
-                </button> : <div style={{display: 'flex'}}>
-                    <div> {props.user} &nbsp; </div>
-                    <button onClick={ () => props.setUser("","") }>
-                            log out
-                    </button> &nbsp;
-                    <button onClick={ props.toggleInvoices } > prev. charges </button>
-                </div> :
+                (props.user === "")?
+                    <button onClick={ togglePopup }> log in </button>
+                    :
+                    <div style={{display: 'flex'}}>
+                        <div> {props.user} &nbsp; </div>
+                        <button onClick={ () => props.setUser("","") }>
+                                log out
+                        </button> &nbsp;
+                        <button onClick={ props.toggleInvoices } > prev. charges </button>
+                    </div>
+                :
                  <Popup togglePopup = {togglePopup}
                         onUsernameFieldChange = {onUsernameFieldChange}
                         onPasswordFieldChange = {onPasswordFieldChange} 
                         usernameString = {usernameString}
                         passwordString = {passwordString}
                         authUser = {authUser}
-                        registerUser = {registerUser}   /> }
+                        registerUser = {registerUser}   />
+            }
         </div>
     )
 }

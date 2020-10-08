@@ -3,6 +3,7 @@ import axios from 'axios';
 import SingleInvoice from './SingleInvoice';
 import styles from './InvoicesList.module.css'
 
+//list invoices of the user
 export default function InvoicesList(props) {
 
     const [invoices, setInvoices] = useState([]);

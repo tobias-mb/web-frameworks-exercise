@@ -2,7 +2,7 @@
     background-color: seashell;
     padding: 10px;
     width: 98vw;
-    height: 97vh
+    height: 97vh;
 }
 
 .returnButton {
@@ -12,5 +12,12 @@
 }
 
 .image{
-    max-width: 60vh;
+    max-height: 40vh;
+    max-width: 90vw;
+}
+
+.connections{
+    width: fit-content;
+    min-width: 10cm;
+    max-width: 90vw;
 }

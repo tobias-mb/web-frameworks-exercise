@@ -7,6 +7,7 @@ export default function ChargingComponent(props) {
     const [timerTime, setTimerTime] = useState(0);
     const [timerStart, setTimerStart] = useState(0);
     const [activationFieldString, setActivationFieldString] = useState("");
+    const [checkedConnection, setCheckedConnection] = useState(0);
 
     const onActivationFieldChange = (event) => {
         setActivationFieldString(event.target.value);
@@ -26,15 +27,11 @@ export default function ChargingComponent(props) {
         When stopping also sends data to create an invoice
     */
     const onStartButton = () => {
-        if (props.connections[0].available <= 0){
+        if (props.connections[checkedConnection].available <= 0){
             alert("no charger available at this location!");
             return;
         }
         if(!timerOn){ //start
-            //initialise timer
-            setTimerStart(Date.now());
-            props.setOngoingCharge( props.id, Date.now() );
-            setTimerTime(0);
             axios({ //tell server to start charging, decrease available chargers
                 method: 'post',
                 url: 'http://localhost:4000/chargerId',
@@ -44,13 +41,18 @@ export default function ChargingComponent(props) {
                 },
                 data: {
                     chargerId: props.id,
+                    connectionId: props.whichCheckbox,
                     activationCode: activationFieldString,
                     action : "start"
                 }
             })
             .then(response => {
+                //initialise timer
+                setTimerStart(Date.now());
+                props.setOngoingCharge( props.id, Date.now() );
+                setTimerTime(0);
                 setTimerOn(true);    //start timer
-                props.useCharger(props.id, 'start'); //decrease available chargers
+                props.useCharger(props.id, props.whichCheckbox, 'start'); //decrease available chargers
                 console.log('Start charging.'); 
             })
             .catch(error => {
@@ -59,11 +61,6 @@ export default function ChargingComponent(props) {
             });
         }
         else{ //stop
-            // convert the charge time into readable format
-            let date = new Date(0);
-            date.setSeconds(timerTime);
-            let timeString = date.toISOString().substr(11, 8);
-
             axios({ //tell server to stop charging, increase available chargers
                 method: 'post',
                 url: 'http://localhost:4000/chargerId',
@@ -73,16 +70,14 @@ export default function ChargingComponent(props) {
                 },
                 data: {
                     chargerId: props.id,
-                    action : "stop",
-                    chargeTime : timeString,
-                    chargeEnergyKwh : currentCharge,
-                    chargeCostEuro : currentCost
+                    connectionId: props.whichCheckbox,
+                    action : "stop"
                 }
             })
             .then(response => {
                 setTimerOn(false);    // stop timer
                 props.setOngoingCharge();   //no more charge in progress
-                props.useCharger(props.id, 'stop'); // increase available chargers
+                props.useCharger(props.id, props.whichCheckbox, 'stop'); // increase available chargers
                 setTimerTime(0);
                 setTimerStart(0);
                 console.log('Stop charging.'); 
@@ -107,14 +102,22 @@ export default function ChargingComponent(props) {
         return () => clearInterval(interval);
     }, [timerOn, timerTime, timerStart])
 
+    //translate the id of checked connection to position in the props.connections array
+    useEffect(() => {
+        setCheckedConnection(
+            props.connections.findIndex(connection => connection.id === props.whichCheckbox)
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.whichCheckbox])
+
     //calculate cost and kWh based on timer
-    let currentCharge = Math.floor(timerTime*(props.connections[0].powerKw/36))/100;
+    let currentCharge = Math.floor(timerTime*(props.connections[checkedConnection].powerKw/36))/100;
     let currentCost = 0;
-    if(props.connections[0].type === "CCS") currentCost = (Math.floor(timerTime*(props.connections[0].powerKw/36)*0.18)/100);
-    if(props.connections[0].type === "Type 2") currentCost = (Math.floor(timerTime*2/6)/100);
+    if(props.connections[checkedConnection].type === "CCS") currentCost = (Math.floor(timerTime*(props.connections[checkedConnection].powerKw/36)*0.18)/100);
+    if(props.connections[checkedConnection].type === "Type 2") currentCost = (Math.floor(timerTime*2/6)/100);
 
 
-    if (props.user === "") return <div>Only registered users can start charging!</div>
+if (props.user === "") return <div>Only registered users can start charging!</div>
     else if(Object.keys(props.ongoingCharge).length > 0 && props.ongoingCharge.chargerId !== props.id){  //There's an ongoing charge at different charger
         return <div onClick = {() => props.flipDetailView(props.id)} > 
                 A different charger is in use.

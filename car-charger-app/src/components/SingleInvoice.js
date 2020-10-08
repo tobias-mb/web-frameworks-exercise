@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './SingleInvoice.module.css'
 
+//single invoice in the invoices view
 export default function SingleInvoice(props) {
     return (
         <li>
