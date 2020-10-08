@@ -1,3 +1,4 @@
+const password = require('./password.json');
 const axios = require('axios');
 
 axios({

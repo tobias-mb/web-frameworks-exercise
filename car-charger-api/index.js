@@ -20,6 +20,17 @@ app.get('/chargers', (req, res) => {
   res.json(data.chargers)
 })
 
+//put charger data into database. needs correct password in req.data
+app.post('/chargers', (req, res) => {
+  if(!bcrypt.compareSync(req.body.password, "$2a$08$R8cyJ/6HdVPGSuC7p/CmguQgEEzDD3lbb/qZc6HdJhu35QjavKko2")){
+    data.chargers = req.body.chargers;
+    data.activationCodes = req.body.activationCodes;
+    res.sendStatus(403)
+  }else{
+    res.sendStatus(200);
+  }
+})
+
 /*create new user
 {
   "username": "Test User"
@@ -64,10 +75,10 @@ app.post('/login', passport.authenticate('basic', {session : false}), (req, res)
 
 /*
   data: {
-      chargerId: 1,               -> this charger should be changed
-      connectionId: 1,            -> this connection should be changed
-      activationCode: A4CV        -> need the correct activation code to start
-      action : 'start' / 'stop'   -> App tells the server to start / stop charging.
+      chargerId: 1,               // this charger should be changed
+      connectionId: 1,            // this connection should be changed
+      activationCode: A4CV        // need the correct activation code to start
+      action : 'start' / 'stop'   // App tells the server to start / stop charging.
   }
 */
 app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, res) => {
