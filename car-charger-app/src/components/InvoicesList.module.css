@@ -2,4 +2,5 @@
     overflow-y: scroll;
     width: fit-content;
     height: 90vh;
+    padding-right: 10px;
 }

@@ -20,25 +20,24 @@ class App extends React.Component {
       searchString: "", // for search field
       detailView: 0,    // id of charger open in detail. Or 0 for main view.
       showInvoices: false,
-      timerOn: false
+      ongoingCharge: {} // {chargerId: xx, startTime: xx} to save an ongoing charge
     }
   }
 
-  toggleTimer = () => {
-    if(this.state.timerOn) this.setState({ timerOn: false });
-    else this.setState({ timerOn: true });
-  }
   toggleInvoices = () => {
     if(this.state.showInvoices) this.setState({ showInvoices: false });
     else this.setState({ showInvoices: true });
   }
   setUser = (user, password) => {
-    if(this.state.timerOn){
-      alert("can't log out while timer is running");
-      return;
-    }
     this.setState({ user : user,
                     password : password });
+  }
+  setOngoingCharge = (charger,time) => {
+    let boo = {};
+    if(charger !== undefined && time !== undefined){ //called with arguments
+      boo = {chargerId: charger, startTime: time};
+    }
+    this.setState({ ongoingCharge: boo });
   }
 
   //Update internal state of APP when charger is in use. action = 'start'  / 'stop'
@@ -79,11 +78,6 @@ class App extends React.Component {
 
   //used to get detail view for element with id displayId or return to the main view for id = 0
   flipDetailView = (displayId) => {
-    
-    if(this.state.timerOn){
-      alert("can't close charging while timer is running");
-      return;
-    }
 
     if(this.state.showInvoices) this.toggleInvoices();  // so it can be called from invoices
           
@@ -104,6 +98,7 @@ class App extends React.Component {
     }
     else if (this.state.detailView === 0) {renderOutput =  // Main View
       <div className={styles.App}>
+        <button onClick={ () => console.log(this.state.ongoingCharge) }> click me </button>
         <h1 className={styles.title}>CarChargerApp</h1>
         <LogIn user = {this.state.user} setUser = {this.setUser} toggleInvoices = {this.toggleInvoices} />
         Search: <input type = "text" onChange ={ this.onSearchFieldChange } value={ this.state.searchString } />
@@ -121,9 +116,9 @@ class App extends React.Component {
                   password = {this.state.password}
                   toggleInvoices = {this.toggleInvoices}
                   setUser = {this.setUser}
-                  useCharger = {this.useCharger} 
-                  timerOn = {this.state.timerOn}
-                  toggleTimer = {this.toggleTimer} />
+                  useCharger = {this.useCharger}
+                  ongoingCharge = {this.state.ongoingCharge}
+                  setOngoingCharge = {this.setOngoingCharge} />
     }
     return renderOutput;
   };

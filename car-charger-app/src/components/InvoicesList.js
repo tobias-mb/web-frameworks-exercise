@@ -25,7 +25,8 @@ export default function InvoicesList(props) {
             console.log(error);
             alert("Something went wrong :(");
         })
-    }, [props.user, props.password])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
 
     return (
