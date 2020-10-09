@@ -21,7 +21,7 @@ export default function Popup(props) {
             </form>
             <form style={{display: 'flex'}} onSubmit={onEnter} >
                 <div>Password: &nbsp;&nbsp; </div>
-                <input type = "text" onChange ={ props.onPasswordFieldChange } value={ props.passwordString } />
+                <input type = "password" onChange ={ props.onPasswordFieldChange } value={ props.passwordString } />
             </form>
             <div> &nbsp; </div>
         </div>

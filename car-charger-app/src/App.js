@@ -90,9 +90,8 @@ class App extends React.Component {
 
   //checks if the search string is part of name, address or type
   searchAllParts = (charger) => {
-    if(    charger.name.includes(this.state.searchString)
-        || charger.address.includes(this.state.searchString) 
-        || charger.connections[0].type.includes(this.state.searchString) ) return true;
+    if(    charger.name.toLowerCase().includes(this.state.searchString.toLowerCase())
+        || charger.address.toLowerCase().includes(this.state.searchString.toLowerCase()) ) return true;
     else return false;
   }
 
