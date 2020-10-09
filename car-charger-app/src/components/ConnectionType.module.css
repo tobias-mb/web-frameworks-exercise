@@ -2,3 +2,8 @@
     margin-left: auto;
     margin-right: 10px;
 }
+
+.element{
+    display: flex;
+    flex-wrap: wrap;
+}
