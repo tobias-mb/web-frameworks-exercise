@@ -24,6 +24,7 @@ app.get('/chargers', (req, res) => {
     let promise1 = new Promise((resolve, reject) => {
       let counter2 = 0;
       for (let i = 0; i < chargerData.length; i++) { //iterate chargers
+        chargerData.coordinates = [chargerData.latitude / 1000000 ,chargerData.longitude / 1000000];
         let chargerConnections = chargerData[i].connections.split(',');  // IDs of the connections to the charger
         let counter1 = 0;
         for (let j = 0; j < chargerConnections.length; j++){      //iterate connections
@@ -142,7 +143,8 @@ app.post('/users', (req, res) => {
     .then(results => {
       // put user into db 
       const passwordHash = bcrypt.hashSync(req.body.password, 8);
-      db.query('INSERT INTO users (name, password) VALUES (?,?)', [req.body.username, passwordHash])
+      db.query('INSERT INTO users (name, password, invoices, ongoingCharge_chargerId, ongoingCharge_startTime) VALUES (?,?,?,?,?)',
+                                  [req.body.username, passwordHash, "", 0, 0])
         .then(results => {
           console.log(results);
           res.sendStatus(201);
@@ -156,14 +158,20 @@ app.post('/users', (req, res) => {
 
 //get Authorization
 passport.use(new passportHttp.BasicStrategy(function(username, password, done) {
-  const userResult = data.users.find(user => user.name === username);
-  if(userResult === undefined){
-    return done(null, false); // user doesn't exist
-  }
-  if(!bcrypt.compareSync(password, userResult.password)){
-    return done(null, false); // wrong password
-  }
-  done(null, userResult);
+  db.query('SELECT * FROM users where name = ?', [username])
+  .then( result => {
+    if(result.length === 0){  //user doesn't exist'
+    return done(null, false);
+    }
+    if(!bcrypt.compareSync(password, result[0].password)){
+      return done(null, false); // wrong password
+    }
+    done(null, result);
+  })
+  .catch(err => {
+    console.log(err)
+  })
+  
 }));
 
 // for log in: will try to authenticate with username and password
