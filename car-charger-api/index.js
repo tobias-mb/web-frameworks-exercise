@@ -7,6 +7,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const passportHttp = require('passport-http');
+const db = require('./db');
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -147,6 +148,20 @@ app.get('/invoices', passport.authenticate('basic', {session : false}), (req, re
   res.json(data.invoices.filter(invoice => invoice.userId === req.user.id ));
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+/* DB init */
+Promise.all(
+  [
+      db.query(`CREATE TABLE IF NOT EXISTS dogHouse(
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(32),
+          image VARCHAR(256)
+      )`)
+      // Add more table create statements if you need more tables
+  ]
+).then(() => {
+  console.log('database initialized');
+  app.listen(port, () => {
+      console.log(`Example API listening on http://localhost:${port}\n`);
+  });
 })
+.catch(error => console.log(error));
