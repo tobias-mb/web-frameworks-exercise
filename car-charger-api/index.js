@@ -250,7 +250,10 @@ app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, 
 
 //get invoices of the user, who makes the request
 app.get('/invoices', passport.authenticate('basic', {session : false}), (req, res) => {
-  res.json(data.invoices.filter(invoice => invoice.userId === req.user.id ));
+  db.query('SELECT * FROM invoices where userId = ?', [req.user.id])
+  .then(response => {
+    res.json(response[0]);
+  })
 })
 
 /* DB init */
@@ -281,6 +284,15 @@ Promise.all(
           powerKw INT,
           activationCode VARCHAR(8)
       )`),
+      db.query(`CREATE TABLE IF NOT EXISTS invoices(
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          userId INT,
+          chargerId INT,
+          date VARCHAR(32),
+          chargeTime VARCHAR(32),
+          chargeEnergyKwh INT,
+          chargeCostEuro INT
+    )`),
       // Add more table create statements if you need more tables
   ]
 ).then(() => {
