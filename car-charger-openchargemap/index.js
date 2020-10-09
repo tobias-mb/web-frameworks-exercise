@@ -14,8 +14,8 @@ Array.prototype.doSomeMagic = function() {
                 type: this[i].Connections[j].ConnectionType.Title,
                 available: this[i].Connections[j].Quantity,
                 maxAvailable: this[i].Connections[j].Quantity,
-                powerKw: this[i].Connections[j].PowerKW
-
+                powerKw: this[i].Connections[j].PowerKW,
+                activationCode: "A4CV"
             });
 
         }
@@ -41,14 +41,6 @@ axios({
     var openchargemapChargers = response.data;
     //convert data into format that I can use
     var myChargers = openchargemapChargers.doSomeMagic();
-    //for testing the activation codes are all A4CV
-    var myActivationCodes = [];
-    for(let k=0; k < myChargers.length; k++){
-        myActivationCodes.push({
-            chargerId: myChargers[k].id,
-            activationCode: "A4CV"
-        });
-    }
 
     //give the modified data to my database
     axios({
@@ -56,8 +48,7 @@ axios({
         url: 'http://localhost:4000/chargers',
         data: {
             password: password.password,
-            chargers: myChargers,
-            activationCodes: myActivationCodes
+            chargers: myChargers
         }
     })
     .then(response => {

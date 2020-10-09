@@ -8,7 +8,6 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const passportHttp = require('passport-http');
 const db = require('./db');
-
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -21,22 +20,110 @@ app.get('/chargers', (req, res) => {
   res.json(data.chargers)
 })
 
-/*put charger data into database. needs correct password in req.data. Activation Codes need to be a seperate Array!!
+/*put charger data into database. needs correct password in req.data.
 data: {
   "password": "wasd",
-  "chargers": [],
-  "activationCodes: []"
+  "chargers": []
 }
 */
 app.post('/chargers', (req, res) => {
   if(!bcrypt.compareSync(req.body.password, "$2a$08$R8cyJ/6HdVPGSuC7p/CmguQgEEzDD3lbb/qZc6HdJhu35QjavKko2")){ //wrong pw
     res.sendStatus(403)
-  }else{
-    data.chargers = req.body.chargers;
-    data.activationCodes = req.body.activationCodes;
-    res.sendStatus(200);
   }
+
+  let chargers = req.body.chargers;
+  let counter1 = 0;
+
+  for(let i = 0; i < chargers.length; i++){ //iterate chargers
+    //put charger into db
+    db.query('INSERT INTO chargers (name, address, latitude, longitude, connections) VALUES (?,?,?,?,?)',
+                                [chargers[i].name, chargers[i].address, chargers[i].coordinates[0]*1000000, chargers[i].coordinates[1]*1000000, "connectionsString"])
+    .then( result => {
+      let chargerId = result.insertId;  //  the charger
+      let rememberConnections = [];     //  connections for the charger
+      let counter2 = 0;
+
+      let promise = new Promise((resolve, reject) => {
+        for(let j = 0; j < chargers[i].connections.length; j++){ //iterate connections
+          let tmpConnection = chargers[i].connections[j];
+          //put the chargers into db and connect them to the charger
+          db.query('INSERT INTO connections (chargerId, type, available, maxAvailable, powerKw, activationCode) VALUES (?,?,?,?,?,?)',
+                                  [chargerId, tmpConnection.type, tmpConnection.available, tmpConnection.maxAvailable, tmpConnection.powerKw, tmpConnection.activationCode])
+          .then(result => {
+            rememberConnections.push(result.insertId);
+            counter2 += 1;
+            if (counter2 === chargers[i].connections.length){
+              resolve([rememberConnections, chargerId]);
+            }
+
+          })
+          .catch(err => reject(err))
+
+        }
+      })
+      return promise;
+
+    })
+    .then( result => {  // add reference from charger to connections
+      
+      let remConString = result[0].toString();
+
+      return db.query('UPDATE chargers SET connections = ? where id = ? ',[remConString, result[1]]);
+      //return db.query('SELECT * FROM chargers where id = ?', [result[1] ])
+
+    })
+    .then(result => { 
+      console.log(result);
+      counter1 += 1;
+      if (counter1 === chargers.length) res.sendStatus(201);
+    })
+
+    .catch(e => {
+      console.log(e);
+      res.sendStatus(500);
+    })
+  }
+
 })
+
+/*
+for(let i=0; i<chargers.length; i++){
+  //put charger into db
+  db.query('INSERT INTO chargers (name, address, latitude, longitude, connections) VALUES (?,?,?,?,?)',
+                                [chargers[i].name, chargers[i].address, chargers[i].coordinates[0]*1000000, chargers[i].coordinates[1]*1000000, "connectionsString"])
+  .then(results => { // has results.insertId for the id of the new charger
+      let chargerId = results.insertId;
+      let rememberConnections = [];
+      let promise = new Promise((resolve, reject) => {
+        for(let j=0; j<chargers[i].connections.length; j++){
+          let tmpConnection = chargers[i].connections[j];
+          //put the chargers into db and connect them to the charger
+          db.query('INSERT INTO connections (chargerId, type, available, maxAvailable, powerKw, activationCode) VALUES (?,?,?,?,?,?)',
+                                  [chargerId, tmpConnection.type, tmpConnection.available, tmpConnection.maxAvailable, tmpConnection.powerKw, tmpConnection.activationCode])
+          .then(results => {
+            rememberConnections.push(results.insertId);
+            console.log(rememberConnections);
+            if( j === chargers[i].connections.length ){
+              resolve([rememberConnections, chargerId]);
+            }
+          })
+          .catch(err => reject(err));
+        }
+      });
+      return promise;
+  })
+  .then(results => {
+    console.log("res ist : " + results);
+    let remConString = results[0].toString();
+    db.query('UPDATE chargers SET connections = ? where id = ? ',[remConString, res[1]])
+  })
+  .then(results => {
+    res.sendStatus(201);
+  })
+  .catch((e) => {
+      console.log(e.message);
+  });
+}*/
 
 /*create new user
 data: {
@@ -45,19 +132,29 @@ data: {
 }
 */
 app.post('/users', (req, res) => {
-  const userResult = data.users.find(user => user.name === req.body.username);
-  if (userResult !== undefined || req.body.username === "" )  res.sendStatus(403)  //user already exists
-  else{
-    const passwordHash = bcrypt.hashSync(req.body.password, 8);
-    data.users.push({
-      id: Date.now(),
-      name: req.body.username,
-      password: passwordHash,
-      invoices: [],
-      ongoingCharge: {}
-    });
-    res.sendStatus(200);
+  if(req.body.username === ""){  // don't accept empty string as username
+    res.sendStatus(403);
+    return;
   }
+  db.query('SELECT * FROM users where name = ?', [req.body.username]) //does this user already exist?
+    .then(results => {
+      if(results.length > 0) {  // found existing user
+        throw new Error('error');
+      }
+    })
+    .then(results => {
+      // put user into db 
+      const passwordHash = bcrypt.hashSync(req.body.password, 8);
+      db.query('INSERT INTO users (name, password) VALUES (?,?)', [req.body.username, passwordHash])
+        .then(results => {
+          console.log(results);
+          res.sendStatus(201);
+        })
+    })
+    .catch(error => {
+        console.error(error);
+        res.sendStatus(403);
+    });
 })
 
 //get Authorization
@@ -151,11 +248,31 @@ app.get('/invoices', passport.authenticate('basic', {session : false}), (req, re
 /* DB init */
 Promise.all(
   [
-      db.query(`CREATE TABLE IF NOT EXISTS dogHouse(
+      db.query(`CREATE TABLE IF NOT EXISTS users(
           id INT AUTO_INCREMENT PRIMARY KEY,
           name VARCHAR(32),
-          image VARCHAR(256)
-      )`)
+          password VARCHAR(64),
+          invoices VARCHAR(128),
+          ongoingCharge_chargerId INT,
+          ongoingCharge_startTime INT
+      )`),
+      db.query(`CREATE TABLE IF NOT EXISTS chargers(
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(32),
+          address VARCHAR(32),
+          latitude INT,
+          longitude INT,
+          connections VARCHAR(128)
+      )`),
+      db.query(`CREATE TABLE IF NOT EXISTS connections(
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          chargerId INT,
+          type VARCHAR(32),
+          available INT,
+          maxAvailable INT,
+          powerKw INT,
+          activationCode VARCHAR(8)
+      )`),
       // Add more table create statements if you need more tables
   ]
 ).then(() => {
