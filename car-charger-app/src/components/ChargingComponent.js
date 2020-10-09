@@ -27,11 +27,11 @@ export default function ChargingComponent(props) {
         When stopping also sends data to create an invoice
     */
     const onStartButton = () => {
-        if (props.connections[checkedConnection].available <= 0){
-            alert("no charger available at this location!");
-            return;
-        }
         if(!timerOn){ //start
+            if (props.connections[checkedConnection].available <= 0){
+                alert("no charger available at this location!");
+                return;
+            }
             axios({ //tell server to start charging, decrease available chargers
                 method: 'post',
                 url: 'http://localhost:4000/chargerId',

@@ -23,8 +23,8 @@
                 {
                     "id": 1,
                     "type" : "CCS",
-                    "available" : 2,
-                    "maxAvailable" : 2,
+                    "available" : 1,
+                    "maxAvailable" : 1,
                     "powerKw" : 50
                 }
             ],
@@ -38,8 +38,8 @@
                 {
                     "id": 1,
                     "type" : "CCS",
-                    "available" : 2,
-                    "maxAvailable" : 2,
+                    "available" : 1,
+                    "maxAvailable" : 1,
                     "powerKw" : 100
                 }
             ],
