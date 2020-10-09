@@ -24,13 +24,16 @@ app.get('/chargers', (req, res) => {
     let promise1 = new Promise((resolve, reject) => {
       let counter2 = 0;
       for (let i = 0; i < chargerData.length; i++) { //iterate chargers
-        chargerData.coordinates = [chargerData.latitude / 1000000 ,chargerData.longitude / 1000000];
+        chargerData[i].coordinates = [chargerData[i].latitude / 1000000 , chargerData[i].longitude / 1000000];  // my App is using coordinates instead of lat,long
+        delete chargerData[i].latitude;
+        delete chargerData[i].longitude;
         let chargerConnections = chargerData[i].connections.split(',');  // IDs of the connections to the charger
         let counter1 = 0;
         for (let j = 0; j < chargerConnections.length; j++){      //iterate connections
           db.query('SELECT * FROM connections where id = ?', [chargerConnections[j]])  // get connection with matching id
           .then( result => {
-            chargerConnections.splice(j,1,result);  // replace the id with the connection
+            delete result[0].activationCode;
+            chargerConnections.splice(j,1,result[0]);  // replace the id with the connection
             counter1 += 1;
             if(counter1 === chargerConnections.length) {  //  connections for one charger finished
               chargerData[i].connections = chargerConnections; // write connections into the charger
