@@ -15,9 +15,45 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+
 //get all chargers
 app.get('/chargers', (req, res) => {
-  res.json(data.chargers)
+  db.query('SELECT * FROM chargers ')
+  .then(result => {
+    var chargerData = [...result];
+    let promise1 = new Promise((resolve, reject) => {
+      let counter2 = 0;
+      for (let i = 0; i < chargerData.length; i++) { //iterate chargers
+        let chargerConnections = chargerData[i].connections.split(',');  // IDs of the connections to the charger
+        let counter1 = 0;
+        for (let j = 0; j < chargerConnections.length; j++){      //iterate connections
+          db.query('SELECT * FROM connections where id = ?', [chargerConnections[j]])  // get connection with matching id
+          .then( result => {
+            chargerConnections.splice(j,1,result);  // replace the id with the connection
+            counter1 += 1;
+            if(counter1 === chargerConnections.length) {  //  connections for one charger finished
+              chargerData[i].connections = chargerConnections; // write connections into the charger
+              counter2 += 1;
+              if(counter2 === chargerData.length) { //connection for all charger finished
+                resolve(chargerData);
+              }
+            }
+          })
+          .catch( (err) => {
+            reject(err);
+          })
+        }
+      }
+    })
+    return promise1;
+  })
+  .then(result =>{
+    res.json(result);
+  })
+  .catch( (err) => {
+    console.log(err);
+    res.sendStatus(500);
+  })
 })
 
 /*put charger data into database. needs correct password in req.data.
@@ -73,7 +109,7 @@ app.post('/chargers', (req, res) => {
 
     })
     .then(result => { 
-      console.log(result);
+      console.log(result.message);
       counter1 += 1;
       if (counter1 === chargers.length) res.sendStatus(201);
     })
@@ -85,45 +121,6 @@ app.post('/chargers', (req, res) => {
   }
 
 })
-
-/*
-for(let i=0; i<chargers.length; i++){
-  //put charger into db
-  db.query('INSERT INTO chargers (name, address, latitude, longitude, connections) VALUES (?,?,?,?,?)',
-                                [chargers[i].name, chargers[i].address, chargers[i].coordinates[0]*1000000, chargers[i].coordinates[1]*1000000, "connectionsString"])
-  .then(results => { // has results.insertId for the id of the new charger
-      let chargerId = results.insertId;
-      let rememberConnections = [];
-      let promise = new Promise((resolve, reject) => {
-        for(let j=0; j<chargers[i].connections.length; j++){
-          let tmpConnection = chargers[i].connections[j];
-          //put the chargers into db and connect them to the charger
-          db.query('INSERT INTO connections (chargerId, type, available, maxAvailable, powerKw, activationCode) VALUES (?,?,?,?,?,?)',
-                                  [chargerId, tmpConnection.type, tmpConnection.available, tmpConnection.maxAvailable, tmpConnection.powerKw, tmpConnection.activationCode])
-          .then(results => {
-            rememberConnections.push(results.insertId);
-            console.log(rememberConnections);
-            if( j === chargers[i].connections.length ){
-              resolve([rememberConnections, chargerId]);
-            }
-          })
-          .catch(err => reject(err));
-        }
-      });
-      return promise;
-  })
-  .then(results => {
-    console.log("res ist : " + results);
-    let remConString = results[0].toString();
-    db.query('UPDATE chargers SET connections = ? where id = ? ',[remConString, res[1]])
-  })
-  .then(results => {
-    res.sendStatus(201);
-  })
-  .catch((e) => {
-      console.log(e.message);
-  });
-}*/
 
 /*create new user
 data: {
