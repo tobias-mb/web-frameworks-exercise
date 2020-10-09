@@ -169,7 +169,7 @@ passport.use(new passportHttp.BasicStrategy(function(username, password, done) {
     if(!bcrypt.compareSync(password, result[0].password)){
       return done(null, false); // wrong password
     }
-    done(null, result);
+    done(null, result[0]);
   })
   .catch(err => {
     console.log(err)
@@ -194,65 +194,59 @@ app.post('/login', passport.authenticate('basic', {session : false}), (req, res)
   }
 */
 app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, res) => {
-  
-  var findActivationCode = data.activationCodes.find(code => code.chargerId === req.body.chargerId);
-  var findCharger = data.chargers.find(charger => charger.id === req.body.chargerId);
-  if (findActivationCode === undefined || findCharger === undefined) { // couldn't find charger or activation code with matching ID (shouldn't happen)
-    res.sendStatus(500); 
-    return;
-  }
+  var findConnection = {};
+  db.query('SELECT * FROM connections WHERE id = ? AND chargerId = ?', [req.body.connectionId, req.body.chargerId])
+  .then( result => {
+    findConnection = result[0];
+    if(req.body.action === 'stop'){
+      db.query('UPDATE connections SET available = ? where id = ? ',[findConnection + 1, findConnection.id] );
+      db.query('SELECT * FROM users WHERE id = ?' [req.user.id])
+      .then( result => {
+        let ongoingStartTime = result[0].ongoingCharge_startTime;
+        var previousInvoices = result[0].invoices.split(',');
+        //some math to calculate charge time & cost
+        let rightnow = new Date();
+        let chargeTime = Math.floor((rightnow.getTime() - ongoingStartTime)/1000);
+        let chargeEnergyKwh = Math.floor(chargeTime*(findConnection.powerKw/36))/100;
+        let chargeCostEuro = 0;
+        if(findConnection.powerKw > 24) chargeCostEuro = (Math.floor(chargeTime*(findConnection.powerKw/36)*0.18)/100);
+        if(findConnection.powerKw > 10) chargeCostEuro = (Math.floor(chargeTime*2/6)/100);
+        //make chargeTime more readable
+        let gru = new Date(0);
+        gru.setSeconds(chargeTime);
+        let readgru = gru.toISOString().substr(11, 8);
 
-  var findConnectionIndex = findCharger.connections.findIndex(connection => connection.id === req.body.connectionId);
-  if(findConnectionIndex === -1){ // The specified connection doesn't exist at this charger (shouldn't happen)
-    res.sendStatus(500); 
-    return;
-  }
+        return db.query('INSERT INTO invoices (userId, chargerId, date, chargeTime, chargeEnergyKwh, chargeCostEuro) VALUES (?,?,?,?,?,?)',
+                                  [req.user.id, findConnection.chargerId, rightnow.toLocaleString(), readgru, chargeEnergyKwh, chargeCostEuro])
+      })
+      .then(result => {
+        var newInvoiceId = result.insertId;
+        previousInvoices.push(newInvoiceId);
+        db.query('UPDATE users SET invoices = ?, ongoingCharge_chargerId = ?, ongoingCharge_startTime = ? WHERE id = ?', [previousInvoices,toString(), 0, 0, req.user.id])
+      })
+      .catch(err => {
+        console.log(err);
+        res.sendStatus(500);
+      })
 
-  if (req.body.action === 'stop'){  // stop charging and create invoice for that charge
-    findCharger.connections[findConnectionIndex].available +=1;
 
-    //some math to calculate charge time & cost
-    let rightnow = new Date();
-    chargeTime = Math.floor((rightnow.getTime() - req.user.ongoingCharge.startTime)/1000);
-    chargeEnergyKwh = Math.floor(chargeTime*(findCharger.connections[findConnectionIndex].powerKw/36))/100;
-    let chargeCostEuro = 0;
-    if(findCharger.connections[findConnectionIndex].type === "CCS") chargeCostEuro = (Math.floor(chargeTime*(findCharger.connections[findConnectionIndex].powerKw/36)*0.18)/100);
-    if(findCharger.connections[findConnectionIndex].type === "Type 2") chargeCostEuro = (Math.floor(chargeTime*2/6)/100);
-    //make chargeTime more readable
-    let gru = new Date(0);
-    gru.setSeconds(chargeTime);
-    let readgru = gru.toISOString().substr(11, 8);
-    
-    data.invoices.push({
-      id : rightnow.getTime(),
-      userId : req.user.id,
-      chargerId : req.body.chargerId,
-      date : rightnow.toLocaleString(),
-      chargeTime : readgru,
-      chargeEnergyKwh : chargeEnergyKwh,
-      chargeCostEuro : chargeCostEuro
-    });
-
-    req.user.invoices.push(rightnow.getTime());
-
-    req.user.ongoingCharge = {}; //clear ongoign charge
-    res.sendStatus(200);
-    return;
-  }
-  if( req.body.action === 'start' && findActivationCode.activationCode === req.body.activationCode){  // start charging & code is correct 
-    req.user.ongoingCharge = {chargerId: req.body.chargerId, startTime: Date.now()}; // save ongoing charge
-    findCharger.connections[findConnectionIndex].available -= 1;
-    res.sendStatus(200);
-    return;
-  }
-  res.sendStatus(403);  // refuse when activation code is wrong
+    }
+    if(req.body.action === 'start' && req.body.activationCode === findConnection.activationCode){
+      db.query('UPDATE connections SET available = ? where id = ? ',[findConnection - 1, findConnection.id] );
+      db.query('UPDATE users SET ongoingCharge_chargerId = ?, ongoingCharge_startTime = ? WHERE id = ?', [findConnection.chargerId, Date.now(), req.user.id]);
+    }
+  })
+  .catch(err => {
+    console.log(err);
+    res.sendStatus(500);
+  })
 })
 
 //get invoices of the user, who makes the request
 app.get('/invoices', passport.authenticate('basic', {session : false}), (req, res) => {
   db.query('SELECT * FROM invoices where userId = ?', [req.user.id])
   .then(response => {
-    res.json(response[0]);
+    res.json(response[0].split(','));
   })
 })
 
@@ -269,8 +263,8 @@ Promise.all(
       )`),
       db.query(`CREATE TABLE IF NOT EXISTS chargers(
           id INT AUTO_INCREMENT PRIMARY KEY,
-          name VARCHAR(32),
-          address VARCHAR(32),
+          name VARCHAR(64),
+          address VARCHAR(64),
           latitude INT,
           longitude INT,
           connections VARCHAR(128)
@@ -282,7 +276,7 @@ Promise.all(
           available INT,
           maxAvailable INT,
           powerKw INT,
-          activationCode VARCHAR(8)
+          activationCode VARCHAR(16)
       )`),
       db.query(`CREATE TABLE IF NOT EXISTS invoices(
           id INT AUTO_INCREMENT PRIMARY KEY,

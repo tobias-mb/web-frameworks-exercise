@@ -6,14 +6,15 @@ into an array my App can use */
 Array.prototype.doSomeMagic = function() {
     let res = [];
     for (let i = 0; i < this.length; i++) {
-        if (res.findIndex(charger => charger.name === this[i].AddressInfo.Title) !== -1) continue;
+        if (res.findIndex(charger => charger.name === this[i].AddressInfo.Title) !== -1) continue;  //skip duplicates
         let tmpConns = [];
         for (let j = 0; j < this[i].Connections.length; j++) {
+            let tmpAvailable = (this[i].Connections[j].Quantity === null)? 1 : this[i].Connections[j].Quantity;
             tmpConns.push({
                 id: this[i].Connections[j].ID,
                 type: this[i].Connections[j].ConnectionType.Title,
-                available: this[i].Connections[j].Quantity,
-                maxAvailable: this[i].Connections[j].Quantity,
+                available: tmpAvailable,
+                maxAvailable: tmpAvailable,
                 powerKw: this[i].Connections[j].PowerKW,
                 activationCode: "A4CV"
             });
