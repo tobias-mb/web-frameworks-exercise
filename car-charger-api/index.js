@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // use these to save charging start time into db
-const startBase = 1602343278057; // Date.now() as a base value.
+const startBase = 1602367705545; // Date.now() as a base value.
 // "hours:minutes:seconds"
 String.prototype.convertToMilliseconds = function convertToMilliseconds(){
   let arr = this.split(':');
@@ -360,7 +360,7 @@ Promise.all(
           password VARCHAR(64),
           invoices VARCHAR(128),
           ongoingCharge_connectionId INT,
-          ongoingCharge_startTime VARCHAR(64)
+          ongoingCharge_startTime VARCHAR(128)
       )`),
       db.query(`CREATE TABLE IF NOT EXISTS chargers(
           id INT AUTO_INCREMENT PRIMARY KEY,
