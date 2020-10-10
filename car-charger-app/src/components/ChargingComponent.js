@@ -35,6 +35,7 @@ export default function ChargingComponent(props) {
             let findConnection = props.connections.find(connection => connection.id === props.whichCheckbox);
             if(findConnection === undefined){
                 alert("choose a charger first!");
+                return;
             }else if(findConnection.available <= 0){
                 alert("no charger available at this location!");
                 return;
