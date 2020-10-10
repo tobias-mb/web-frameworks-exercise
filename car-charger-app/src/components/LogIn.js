@@ -34,7 +34,7 @@ export default function LogIn(props) {
         .then(response => {
             console.log('Log in successful.');
             props.setUser(name, password);
-            props.setOngoingCharge(response.data.chargerId, response.data.startTime);
+            props.setOngoingCharge(response.data.chargerId, response.data.connectionId, response.data.startTime);
             setUsernameString("");
             setPasswordString("");
             togglePopup();

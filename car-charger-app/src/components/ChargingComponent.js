@@ -34,22 +34,20 @@ export default function ChargingComponent(props) {
             }
             axios({ //tell server to start charging, decrease available chargers
                 method: 'post',
-                url: 'http://localhost:4000/chargerId',
+                url: 'http://localhost:4000/chargerStart',
                 auth: {
                     username: props.user,
                     password: props.password
                 },
                 data: {
-                    chargerId: props.id,
                     connectionId: props.whichCheckbox,
-                    activationCode: activationFieldString,
-                    action : "start"
+                    activationCode: activationFieldString
                 }
             })
             .then(response => {
                 //initialise timer
                 setTimerStart(Date.now());
-                props.setOngoingCharge( props.id, Date.now() );
+                props.setOngoingCharge( props.id, props.whichCheckbox, Date.now() );
                 setTimerTime(0);
                 setTimerOn(true);    //start timer
                 props.useCharger(props.id, props.whichCheckbox, 'start'); //decrease available chargers
@@ -63,15 +61,10 @@ export default function ChargingComponent(props) {
         else{ //stop
             axios({ //tell server to stop charging, increase available chargers
                 method: 'post',
-                url: 'http://localhost:4000/chargerId',
+                url: 'http://localhost:4000/chargerStop',
                 auth: {
                     username: props.user,
                     password: props.password
-                },
-                data: {
-                    chargerId: props.id,
-                    connectionId: props.whichCheckbox,
-                    action : "stop"
                 }
             })
             .then(response => {
@@ -113,8 +106,8 @@ export default function ChargingComponent(props) {
     //calculate cost and kWh based on timer
     let currentCharge = Math.floor(timerTime*(props.connections[checkedConnection].powerKw/36))/100;
     let currentCost = 0;
-    if(props.connections[checkedConnection].type === "CCS") currentCost = (Math.floor(timerTime*(props.connections[checkedConnection].powerKw/36)*0.18)/100);
-    if(props.connections[checkedConnection].type === "Type 2") currentCost = (Math.floor(timerTime*2/6)/100);
+    if(props.connections[checkedConnection].powerKw > 24) currentCost = (Math.floor(timerTime*(props.connections[checkedConnection].powerKw/36)*0.18)/100);
+    else if(props.connections[checkedConnection].powerKw > 10) currentCost = (Math.floor(timerTime*2/6)/100);
 
 
 if (props.user === "") return <div>Only registered users can start charging!</div>

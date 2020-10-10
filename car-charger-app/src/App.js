@@ -20,7 +20,7 @@ class App extends React.Component {
       searchString: "", // for search field
       detailView: 0,    // id of charger open in detail. Or 0 for main view.
       showInvoices: false,
-      ongoingCharge: {} // {chargerId: xx, startTime: xx} to save an ongoing charge
+      ongoingCharge: {} // {chargerId: xx, connectionId: xx, startTime: xx} to save an ongoing charge
     }
   }
 
@@ -34,10 +34,12 @@ class App extends React.Component {
                     password : password });
   }
   //remember ongoing charge
-  setOngoingCharge = (charger,time) => {
+  setOngoingCharge = (charger, connection, time) => {
     let boo = {};
-    if(charger !== undefined && time !== undefined){ //called with arguments
-      boo = {chargerId: charger, startTime: time};
+    if(charger !== undefined && time !== undefined && connection !== undefined){ //called with arguments
+      if(charger !== -1 && connection !== -1){  // check for valid ids
+        boo = {chargerId: charger, connectionId: connection, startTime: time};
+      }
     }
     this.setState({ ongoingCharge: boo });
   }

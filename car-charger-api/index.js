@@ -1,4 +1,3 @@
-const data = require('./data.json');
 const express = require('express');
 const app = express();
 const port = 4000;
@@ -15,7 +14,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-
 //get all chargers
 app.get('/chargers', (req, res) => {
   db.query('SELECT * FROM chargers ')
@@ -24,7 +22,7 @@ app.get('/chargers', (req, res) => {
     let promise1 = new Promise((resolve, reject) => {
       let counter2 = 0;
       for (let i = 0; i < chargerData.length; i++) { //iterate chargers
-        chargerData[i].coordinates = [chargerData[i].latitude / 1000000 , chargerData[i].longitude / 1000000];  // my App is using coordinates instead of lat,long
+        chargerData[i].coordinates = [chargerData[i].latitude / 10000000 , chargerData[i].longitude / 10000000];  // my App is using coordinates instead of lat,long
         delete chargerData[i].latitude;
         delete chargerData[i].longitude;
         let chargerConnections = chargerData[i].connections.split(',');  // IDs of the connections to the charger
@@ -68,8 +66,9 @@ data: {
 */
 app.post('/chargers', (req, res) => {
   if(!bcrypt.compareSync(req.body.password, "$2a$08$R8cyJ/6HdVPGSuC7p/CmguQgEEzDD3lbb/qZc6HdJhu35QjavKko2")){ //wrong pw
-    res.sendStatus(403)
-  }
+    res.sendStatus(403);
+    return;
+  }else{
 
   let chargers = req.body.chargers;
   let counter1 = 0;
@@ -77,7 +76,7 @@ app.post('/chargers', (req, res) => {
   for(let i = 0; i < chargers.length; i++){ //iterate chargers
     //put charger into db
     db.query('INSERT INTO chargers (name, address, latitude, longitude, connections) VALUES (?,?,?,?,?)',
-                                [chargers[i].name, chargers[i].address, chargers[i].coordinates[0]*1000000, chargers[i].coordinates[1]*1000000, "connectionsString"])
+                                [chargers[i].name, chargers[i].address, chargers[i].coordinates[0]*10000000, chargers[i].coordinates[1]*10000000, "connectionsString"])
     .then( result => {
       let chargerId = result.insertId;  //  the charger
       let rememberConnections = [];     //  connections for the charger
@@ -123,8 +122,7 @@ app.post('/chargers', (req, res) => {
       res.sendStatus(500);
     })
   }
-
-})
+}})
 
 /*create new user
 data: {
@@ -140,22 +138,22 @@ app.post('/users', (req, res) => {
   db.query('SELECT * FROM users where name = ?', [req.body.username]) //does this user already exist?
     .then(results => {
       if(results.length > 0) {  // found existing user
-        throw new Error('error');
+        throw new Error('userExists');
       }
+      const passwordHash = bcrypt.hashSync(req.body.password, 8);
+       // put user into db
+      return db.query('INSERT INTO users (name, password, invoices, ongoingCharge_connectionId, ongoingCharge_startTime) VALUES (?,?,?,?,?)',
+                                  [req.body.username, passwordHash, "", -1, 0])
     })
     .then(results => {
-      // put user into db 
-      const passwordHash = bcrypt.hashSync(req.body.password, 8);
-      db.query('INSERT INTO users (name, password, invoices, ongoingCharge_chargerId, ongoingCharge_startTime) VALUES (?,?,?,?,?)',
-                                  [req.body.username, passwordHash, "", 0, 0])
-        .then(results => {
-          console.log(results);
-          res.sendStatus(201);
-        })
+      console.log(results);
+      res.sendStatus(201);
     })
     .catch(error => {
         console.error(error);
-        res.sendStatus(403);
+        if(error.message === 'userExists') res.sendStatus(403);
+        else res.sendStatus(500);
+        
     });
 })
 
@@ -182,71 +180,145 @@ passport.use(new passportHttp.BasicStrategy(function(username, password, done) {
 app.post('/login', passport.authenticate('basic', {session : false}), (req, res) => {
   console.log("successful log in for user:")
   console.log(req.user);
-  res.json( req.user.ongoingCharge );
+  var sendResponse = {chargerId: -1, connectionId: -1, startTime: 0};
+  db.query('SELECT ongoingCharge_connectionId, ongoingCharge_startTime FROM users WHERE id = ?', [req.user.id]) //get ongoing charge
+  .then( result => {
+    sendResponse.connectionId = result[0].ongoingCharge_connectionId;
+    sendResponse.startTime = result[0].ongoingCharge_startTime;
+    return db.query('SELECT chargerId FROM connections WHERE id = ?', [result[0].ongoingCharge_connectionId])
+  })
+  .then( result => {
+    if(result.length !== 0 ) sendResponse.chargerId = result[0]; // == 0 means no charger in use
+    res.json( sendResponse );
+  })
+  .catch( err => {
+    console.log(err);
+    res.sendStatus(500);
+  })  
 })
 
-/*
+/*  When start charging
   data: {
-      chargerId: 1,               // this charger should be changed
-      connectionId: 1,            // this connection should be changed
+      connectionId: 1,            // charging at this connection
       activationCode: A4CV,       // need the correct activation code to start
-      action : 'start' / 'stop'   // App tells the server to start / stop charging.
-  }
 */
-app.post('/chargerId', passport.authenticate('basic', {session : false}), (req, res) => {
+app.post('/chargerStart', passport.authenticate('basic', {session : false}), (req, res) => {
   var findConnection = {};
-  db.query('SELECT * FROM connections WHERE id = ? AND chargerId = ?', [req.body.connectionId, req.body.chargerId])
+  db.query('SELECT * FROM connections WHERE id = ?', [req.body.connectionId])
   .then( result => {
-    findConnection = result[0];
-    if(req.body.action === 'stop'){
-      db.query('UPDATE connections SET available = ? where id = ? ',[findConnection + 1, findConnection.id] );
-      db.query('SELECT * FROM users WHERE id = ?' [req.user.id])
-      .then( result => {
-        let ongoingStartTime = result[0].ongoingCharge_startTime;
-        var previousInvoices = result[0].invoices.split(',');
-        //some math to calculate charge time & cost
-        let rightnow = new Date();
-        let chargeTime = Math.floor((rightnow.getTime() - ongoingStartTime)/1000);
-        let chargeEnergyKwh = Math.floor(chargeTime*(findConnection.powerKw/36))/100;
-        let chargeCostEuro = 0;
-        if(findConnection.powerKw > 24) chargeCostEuro = (Math.floor(chargeTime*(findConnection.powerKw/36)*0.18)/100);
-        if(findConnection.powerKw > 10) chargeCostEuro = (Math.floor(chargeTime*2/6)/100);
-        //make chargeTime more readable
-        let gru = new Date(0);
-        gru.setSeconds(chargeTime);
-        let readgru = gru.toISOString().substr(11, 8);
+    if(result.length > 0) {
+      findConnection = result[0];
+    }else{ // connection not in database (shouldn't happen)
+      throw new Error('error');
+    }
+    if(findConnection.activationCode !== req.body.activationCode ){ // wrong activation code
+      throw new Error('errorWrongCode');
+    }
+    promise = new Promise((resolve, reject) => {
+      let counter = 0;
+      db.query('UPDATE connections SET available = ? WHERE id = ?', [findConnection.available - 1, findConnection.id])  //charger in use
+      .then((result) => {
+        counter++;
+        if(counter === 2){
+          resolve(true);
+        }
+      })
+      .catch(err => reject(err))
+      db.query('UPDATE users SET ongoingCharge_connectionId = ?, ongoingCharge_startTime = ? WHERE id = ?', [findConnection.id, Date.now(), req.user.id]) //set ongoing charge
+      .then((result) => {
+        counter++;
+        if(counter === 2){
+          resolve(true);
+        }
+      })
+      .catch(err => reject(err))
+    })
+    return promise;
+  })
+  .then(res => {
+    res.sendStatus(201);
+  })
+  .catch((err) => {
+    if(err.message === 'errorWrongCode') res.sendStatus(403)
+    else res.sendStatus(500);
+    console.log(err);
+  })
+})
 
-        return db.query('INSERT INTO invoices (userId, chargerId, date, chargeTime, chargeEnergyKwh, chargeCostEuro) VALUES (?,?,?,?,?,?)',
+//When stop charging
+app.post('/chargerStop', passport.authenticate('basic', {session : false}), (req, res) => {
+  var [findConnection, currInvoices, ongoingConnection, ongoingStartTime] = [{},"",-1,0];
+  db.query('SELECT invoices, ongoingCharge_connectionId, ongoingCharge_startTime FROM users WHERE id = ?', [req.user.id]) //get ongoing charge
+  .then(result => {
+    if(result.length === 0) throw new Error('error');
+    else [currInvoices, ongoingConnection, ongoingStartTime] = result[0];
+    currInvoices = currInvoices.split(','); // convert string to an array
+    return db.query('SELECT * FROM connections WHERE id = ?', [ongoingConnection])  //get connection of ongoing charge
+  })
+  .then(result => {
+    if(result.length === 0) throw new Error('error');
+    else findConnection = result[0];
+
+    //some math to calculate charge time & cost
+    let rightnow = new Date();
+    let chargeTime = Math.floor((rightnow.getTime() - ongoingStartTime)/1000);
+    let chargeEnergyKwh = Math.floor(chargeTime*(findConnection.powerKw/36))/100;
+    let chargeCostEuro = 0;
+    if(findConnection.powerKw > 24) chargeCostEuro = (Math.floor(chargeTime*(findConnection.powerKw/36)*0.18)/100);
+    else if(findConnection.powerKw > 10) chargeCostEuro = (Math.floor(chargeTime*2/6)/100);
+    //make chargeTime more readable
+    let gru = new Date(0);
+    gru.setSeconds(chargeTime);
+    let readgru = gru.toISOString().substr(11, 8);
+
+    //create invoice
+    return db.query('INSERT INTO invoices (userId, chargerId, date, chargeTime, chargeEnergyKwh, chargeCostEuro) VALUES (?,?,?,?,?,?)',
                                   [req.user.id, findConnection.chargerId, rightnow.toLocaleString(), readgru, chargeEnergyKwh, chargeCostEuro])
+  })
+  .then(result => {
+    currInvoices.push(result.insertId);
+    promise = new Promise((resolve, reject) => {
+      let counter = 0;
+      db.query('UPDATE connections SET available = ? WHERE id = ?', [findConnection.available + 1, findConnection.id])  // free charger
+      .then((result) => {
+        counter++;
+        if(counter === 2){
+          resolve(true);
+        }
       })
-      .then(result => {
-        var newInvoiceId = result.insertId;
-        previousInvoices.push(newInvoiceId);
-        db.query('UPDATE users SET invoices = ?, ongoingCharge_chargerId = ?, ongoingCharge_startTime = ? WHERE id = ?', [previousInvoices,toString(), 0, 0, req.user.id])
+      .catch(err => reject(err))
+      db.query('UPDATE users SET invoices, ongoingCharge_connectionId = ?, ongoingCharge_startTime = ? WHERE id = ?',  // create reference to invoice & clear ongoing charge
+                  [currInvoices.toString(), -1, 0, req.user.id])
+      .then((result) => {
+        counter++;
+        if(counter === 2){
+          resolve(true);
+        }
       })
-      .catch(err => {
-        console.log(err);
-        res.sendStatus(500);
-      })
+      .catch(err => reject(err))
+    })
 
-
-    }
-    if(req.body.action === 'start' && req.body.activationCode === findConnection.activationCode){
-      db.query('UPDATE connections SET available = ? where id = ? ',[findConnection - 1, findConnection.id] );
-      db.query('UPDATE users SET ongoingCharge_chargerId = ?, ongoingCharge_startTime = ? WHERE id = ?', [findConnection.chargerId, Date.now(), req.user.id]);
-    }
+  })
+  .then(res =>{
+    res.sendStatus(201);
   })
   .catch(err => {
     console.log(err);
     res.sendStatus(500);
   })
+  
 })
 
 //get invoices of the user, who makes the request
 app.get('/invoices', passport.authenticate('basic', {session : false}), (req, res) => {
   db.query('SELECT * FROM invoices where userId = ?', [req.user.id])
   .then(response => {
-    res.json(response[0].split(','));
+    if(response.length > 0) res.json(response[0].split(','));
+    else res.json([]);  //in case this user doesn't have invoices yet
+  })
+  .catch( err => {
+    console.log(err);
+    res.sendStatus(500);
   })
 })
 
@@ -258,7 +330,7 @@ Promise.all(
           name VARCHAR(32),
           password VARCHAR(64),
           invoices VARCHAR(128),
-          ongoingCharge_chargerId INT,
+          ongoingCharge_connectionId INT,
           ongoingCharge_startTime INT
       )`),
       db.query(`CREATE TABLE IF NOT EXISTS chargers(

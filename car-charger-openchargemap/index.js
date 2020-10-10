@@ -42,9 +42,8 @@ axios({
     var openchargemapChargers = response.data;
     //convert data into format that I can use
     var myChargers = openchargemapChargers.doSomeMagic();
-
     //give the modified data to my database
-    axios({
+    return axios({
         method: 'post',
         url: 'http://localhost:4000/chargers',
         data: {
@@ -52,12 +51,9 @@ axios({
             chargers: myChargers
         }
     })
-    .then(response => {
-        console.log('successfully put data to database');
-    })
-    .catch(error => { 
-        console.log(error);
-    });
+})
+.then(response => {
+    console.log('successfully put data to database');
 })
 .catch(error => { 
     console.log(error);
