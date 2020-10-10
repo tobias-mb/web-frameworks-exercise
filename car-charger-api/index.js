@@ -15,13 +15,18 @@ const startBase = 1602367705545; // Date.now() as a base value.
 // "hours:minutes:seconds"
 String.prototype.convertToMilliseconds = function convertToMilliseconds(){
   let arr = this.split(':');
-  return (+arr[2] + 60 * arr[1] + 3600 * arr[0])*1000 + startBase ;
+  return (+arr[3] + 60*arr[2] + 3600*arr[1] + 86400*arr[0]  )*1000 + startBase ;
 }
 Number.prototype.convertToTimestring = function (){
   let seconds = Math.floor((this - startBase)/1000);
-  let gru = new Date(0);
-  gru.setSeconds(seconds);
-  return gru.toISOString().substr(11, 8);
+  let days = Math.floor(seconds/86400);
+  seconds = seconds - days*86400;
+  let hours = Math.floor(seconds/3600);
+  seconds = seconds - hours*3600;
+  let minutes = Math.floor(seconds/60);
+  seconds = seconds - minutes*60;
+  let str = days + ':' + hours + ':' + minutes + ':' + seconds;
+  return str;
 }
 
 app.get('/', (req, res) => {
