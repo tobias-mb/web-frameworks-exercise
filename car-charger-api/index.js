@@ -12,7 +12,7 @@ app.use(cors());
 
 // use these to save charging start time into db
 const startBase = 1602367705545; // Date.now() as a base value.
-// "hours:minutes:seconds"
+// "days:hours:minutes:seconds"
 String.prototype.convertToMilliseconds = function convertToMilliseconds(){
   let arr = this.split(':');
   return (+arr[3] + 60*arr[2] + 3600*arr[1] + 86400*arr[0]  )*1000 + startBase ;
