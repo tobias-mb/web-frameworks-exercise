@@ -1,5 +1,11 @@
-const password = require('./password.json');
+//const password = require('./password.json');
 const axios = require('axios');
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
 /* Converts an array from the API https://openchargemap.org/site/develop/api
 into an array my App can use */
@@ -42,12 +48,21 @@ Array.prototype.doSomeMagic = function(previous) {
     return res;
 };
 
-
-//get chargers already in the db
 var alreadyExisting = [];
-axios({
-    method: 'get',
-    url: 'http://localhost:4000/chargers'
+var inputPassword = "";
+new Promise((resolve, reject) => {
+    rl.question('Please enter password:', (answer) => {
+        resolve(answer);
+        rl.close();
+    });
+})
+.then((response) => {
+    inputPassword = response;
+    return axios({
+        //get chargers already in the db
+        method: 'get',
+        url: 'http://localhost:4000/chargers'
+    })
 })
 .then(result => {
     console.log("server answered.")
@@ -68,7 +83,7 @@ axios({
         method: 'post',
         url: 'http://localhost:4000/chargers',
         data: {
-            password: password.password,
+            password: inputPassword,
             chargers: myChargers
         }
     })
