@@ -1,6 +1,7 @@
 .App{
   width: 98vw;
-  height: 97vh;
+  min-height: 97vh;
+  height: fit-content;
   background-color: seashell;
   padding: 10px;
 }

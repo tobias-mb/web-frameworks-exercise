@@ -32,6 +32,7 @@ app.get('/', (req, res) => {
 app.get('/chargers', (req, res) => {
   db.query('SELECT * FROM chargers ')
   .then(result => {
+    if(result.length === 0) return result;
     var chargerData = [...result];
     let promise1 = new Promise((resolve, reject) => {
       let counter2 = 0;
@@ -83,9 +84,12 @@ app.post('/chargers', (req, res) => {
     res.sendStatus(403);
     return;
   }else{
-
   let chargers = req.body.chargers;
   let counter1 = 0;
+  if(chargers.length === 0){ //nothing to do
+    res.sendStatus(200);
+    return null;
+  }
 
   for(let i = 0; i < chargers.length; i++){ //iterate chargers
     //put charger into db

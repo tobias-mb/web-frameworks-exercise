@@ -33,7 +33,9 @@ export default function ChargingComponent(props) {
     const onStartButton = () => {
         if(!timerOn){ //start
             let findConnection = props.connections.find(connection => connection.id === props.whichCheckbox);
-            if (findConnection.available <= 0){
+            if(findConnection === undefined){
+                alert("choose a charger first!");
+            }else if(findConnection.available <= 0){
                 alert("no charger available at this location!");
                 return;
             }
@@ -104,7 +106,7 @@ export default function ChargingComponent(props) {
     //calculate cost and kWh based on timer
     let currentCharge = 0;
     let currentCost = 0;
-    if(Object.keys(props.ongoingCharge).length > 0){
+    if(Object.keys(props.ongoingCharge).length > 0 && props.ongoingCharge.chargerId === props.id){
         let findOngoingConnection = props.connections.find(connection => connection.id === props.ongoingCharge.connectionId);
         currentCharge = Math.floor(timerTime*(findOngoingConnection.powerKw/36))/100;
         if(findOngoingConnection.powerKw >= 30) currentCost = (Math.floor(timerTime*(findOngoingConnection.powerKw/36)*0.18)/100);
@@ -117,7 +119,8 @@ if (props.user === "") return <div>Only registered users can start charging!</di
                 You are already using a <div className={styles.redirect} onClick = {() => props.flipDetailView(props.ongoingCharge.chargerId)}> &nbsp; different charger. </div>
             </div>
     }else{ return <>
-        <div style = {{fontStyle: 'italic'}} > For testing purposes all activation codes are: A4CV </div>
+        <div style = {{fontStyle: 'italic'}} > For testing purposes all activation codes are: A4CV</div>
+        <div style = {{fontStyle: 'italic'}} > During testing pricing is simplyfied: Chargers with more than 30kW cost €0.18/kWh; Chargers with 20kW to 29kW cost €0.20/min; Chargers with less than 20kW are free.  </div>
         <div>
             enter activation code: <input type = "text" style = {{width: '80px'}}
                                             onChange ={ onActivationFieldChange }

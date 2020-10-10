@@ -1,6 +1,7 @@
 .list{
     overflow-y: scroll;
     width: fit-content;
-    height: 90vh;
+    min-height: 90vh;
+    height: fit-content;
     padding-right: 10px;
 }
