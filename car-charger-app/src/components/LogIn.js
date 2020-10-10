@@ -68,6 +68,11 @@ export default function LogIn(props) {
         });
     }
 
+    const onLogout = () => {
+        props.setUser("","");
+        props.setOngoingCharge();
+    }
+
     return(
         <div>
             {(!showPopup)?
@@ -76,7 +81,7 @@ export default function LogIn(props) {
                     :
                     <div style={{display: 'flex'}}>
                         <div> {props.user} &nbsp; </div>
-                        <button onClick={ () => props.setUser("","") }>
+                        <button onClick={ onLogout }>
                                 log out
                         </button> &nbsp;
                         <button onClick={ props.toggleInvoices } > prev. charges </button>

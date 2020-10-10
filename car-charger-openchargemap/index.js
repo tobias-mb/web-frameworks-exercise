@@ -35,7 +35,7 @@ Array.prototype.doSomeMagic = function() {
 //get charger data from https://openchargemap.org/site/develop/api
 axios({
     method: 'get',
-    url: 'https://api.openchargemap.io/v3/poi/?output=json&countrycode=FI&maxresults=10'
+    url: 'https://api.openchargemap.io/v3/poi/?output=json&countrycode=FI&maxresults=20'
 })
 .then(response => {
     console.log('openchargemap answered.');

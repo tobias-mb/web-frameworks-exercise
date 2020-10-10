@@ -8,7 +8,6 @@ export default function ChargingComponent(props) {
     const [timerTime, setTimerTime] = useState(0);
     const [timerStart, setTimerStart] = useState(0);
     const [activationFieldString, setActivationFieldString] = useState("");
-    const [checkedConnection, setCheckedConnection] = useState(0);
 
     const onActivationFieldChange = (event) => {
         setActivationFieldString(event.target.value);
@@ -19,6 +18,11 @@ export default function ChargingComponent(props) {
         if( Object.keys(props.ongoingCharge).length > 0 && props.ongoingCharge.chargerId === props.id ){ 
             setTimerOn(true);
             setTimerStart(props.ongoingCharge.startTime);
+            setTimerTime(0);
+        }else{
+            setTimerOn(false);
+            setTimerStart(0);
+            setTimerTime(0);
         }
     },[props.ongoingCharge, props.id])
 
@@ -28,7 +32,8 @@ export default function ChargingComponent(props) {
     */
     const onStartButton = () => {
         if(!timerOn){ //start
-            if (props.connections[checkedConnection].available <= 0){
+            let findConnection = props.connections.find(connection => connection.id === props.whichCheckbox);
+            if (findConnection.available <= 0){
                 alert("no charger available at this location!");
                 return;
             }
@@ -69,8 +74,9 @@ export default function ChargingComponent(props) {
             })
             .then(response => {
                 setTimerOn(false);    // stop timer
+                let findConnection = props.connections.find(connection => connection.id === props.ongoingCharge.connectionId);
                 props.setOngoingCharge();   //no more charge in progress
-                props.useCharger(props.id, props.whichCheckbox, 'stop'); // increase available chargers
+                props.useCharger(props.id, findConnection.id, 'stop'); // increase available chargers
                 setTimerTime(0);
                 setTimerStart(0);
                 console.log('Stop charging.'); 
@@ -95,20 +101,15 @@ export default function ChargingComponent(props) {
         return () => clearInterval(interval);
     }, [timerOn, timerTime, timerStart])
 
-    //translate the id of checked connection to position in the props.connections array
-    useEffect(() => {
-        setCheckedConnection(
-            props.connections.findIndex(connection => connection.id === props.whichCheckbox)
-        )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.whichCheckbox])
-
     //calculate cost and kWh based on timer
-    let currentCharge = Math.floor(timerTime*(props.connections[checkedConnection].powerKw/36))/100;
+    let currentCharge = 0;
     let currentCost = 0;
-    if(props.connections[checkedConnection].powerKw > 24) currentCost = (Math.floor(timerTime*(props.connections[checkedConnection].powerKw/36)*0.18)/100);
-    else if(props.connections[checkedConnection].powerKw > 10) currentCost = (Math.floor(timerTime*2/6)/100);
-
+    if(Object.keys(props.ongoingCharge).length > 0){
+        let findOngoingConnection = props.connections.find(connection => connection.id === props.ongoingCharge.connectionId);
+        currentCharge = Math.floor(timerTime*(findOngoingConnection.powerKw/36))/100;
+        if(findOngoingConnection.powerKw >= 30) currentCost = (Math.floor(timerTime*(findOngoingConnection.powerKw/36)*0.18)/100);
+        else if(findOngoingConnection.powerKw > 20) currentCost = (Math.floor(timerTime*2/6)/100);
+    }
 
 if (props.user === "") return <div>Only registered users can start charging!</div>
     else if(Object.keys(props.ongoingCharge).length > 0 && props.ongoingCharge.chargerId !== props.id){  //There's an ongoing charge at different charger
