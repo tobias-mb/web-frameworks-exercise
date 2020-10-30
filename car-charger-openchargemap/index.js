@@ -61,7 +61,7 @@ new Promise((resolve, reject) => {
     return axios({
         //get chargers already in the db
         method: 'get',
-        url: 'http://localhost:4000/chargers'
+        url: 'http://100.25.155.186/chargers'
     })
 })
 .then(result => {
@@ -81,7 +81,7 @@ new Promise((resolve, reject) => {
     //give the modified data to my database
     return axios({
         method: 'post',
-        url: 'http://localhost:4000/chargers',
+        url: 'http://100.25.155.186/chargers',
         data: {
             password: inputPassword,
             chargers: myChargers
