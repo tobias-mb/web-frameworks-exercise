@@ -42,7 +42,7 @@ export default function ChargingComponent(props) {
             }
             axios({ //tell server to start charging, decrease available chargers
                 method: 'post',
-                url: 'http://localhost:4000/chargerStart',
+                url: 'http://100.25.155.186/chargerStart',
                 auth: {
                     username: props.user,
                     password: props.password
@@ -69,7 +69,7 @@ export default function ChargingComponent(props) {
         else{ //stop
             axios({ //tell server to stop charging, increase available chargers
                 method: 'post',
-                url: 'http://localhost:4000/chargerStop',
+                url: 'http://100.25.155.186/chargerStop',
                 auth: {
                     username: props.user,
                     password: props.password

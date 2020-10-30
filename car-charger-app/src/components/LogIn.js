@@ -25,7 +25,7 @@ export default function LogIn(props) {
     const authUser = (name, password) => {
         axios({
             method: 'post',
-            url: 'http://localhost:4000/login',
+            url: 'http://100.25.155.186/login',
             auth: {
                 username: name,
                 password: password
@@ -49,7 +49,7 @@ export default function LogIn(props) {
     const registerUser = (name, password) => {
         axios({
             method: 'post',
-            url: 'http://localhost:4000/users',
+            url: 'http://100.25.155.186/users',
             data: {
                 username: name,
                 password: password

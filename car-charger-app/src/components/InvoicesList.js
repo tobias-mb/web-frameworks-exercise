@@ -12,7 +12,7 @@ export default function InvoicesList(props) {
     useEffect(() => {
         axios({
             method: 'get',
-            url: 'http://localhost:4000/invoices',
+            url: 'http://100.25.155.186/invoices',
             auth: {
                 username: props.user,
                 password: props.password

@@ -78,7 +78,7 @@ class App extends React.Component {
 
   //get charger data on start
   componentDidMount(){
-    axios.get('http://localhost:4000/chargers')
+    axios.get('http://100.25.155.186/chargers')
       .then(res => {
         this.setState({ chargers : res.data });
       })
